@@ -37,20 +37,6 @@ class IntroductionScreens extends StatelessWidget {
               image: buildImage("assets/images/quotes_2.png"),
               decoration: getPageDecoration(),
             ),
-            PageViewModel(
-              title: 'Limitless Categories',
-              body: 'Navigate 700+ realms of inspiration: Discover your ideal quote in every facet of motivation!"',
-              image: buildImage("assets/images/bg2.jpg"),
-              decoration: getPageDecoration(),
-            ),
-            PageViewModel(
-              title: 'Empower, Share, Collect',
-              body: 'Bookmark, download, share: Elevate your journey with the power of customization!',
-              image: buildImage("assets/images/bg2.jpg"),
-              decoration: getPageDecoration(),
-            ),
-
-
           ],
           onDone: () {
             if (kDebugMode) {
@@ -75,14 +61,14 @@ class IntroductionScreens extends StatelessWidget {
             ),
           ),
           done: Text(
-            "Done",
+            "See quotes",
             style: GoogleFonts.quicksand(
               color: Colors.white,
               fontSize: 20,
             ),
           ),
           skip: Text(
-            "Skip",
+            "Skip to quotes",
             style: GoogleFonts.quicksand(
               color: Colors.white,
               fontSize: 20,
