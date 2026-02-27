@@ -9,8 +9,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  path_provider: ^2.1.2
-  sqflite: ^2.3.3
   google_mobile_ads: ^5.0.0
   in_app_purchase: ^3.2.0
   cupertino_icons: ^1.0.2
@@ -34,6 +32,5 @@ flutter:
   assets:
     - assets/images/
     - assets/logo/
-    - assets/db/quotes.db
     - assets/data/quotes.json
     - assets/data/categories.json

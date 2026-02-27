@@ -1,7 +1,5 @@
 // utils.dart
 import 'dart:math' as math;
-import 'package:flutter/foundation.dart';
-import 'package:new_quotes/services/db_service.dart';
 import 'package:new_quotes/services/local_data_service.dart';
 import 'package:flutter/services.dart' show rootBundle, AssetManifest;
 import 'package:flutter/material.dart';
@@ -83,38 +81,48 @@ String cleanCapitalizeAndBreak(String s) {
   return result;
 }
 
-Future<List<Map<String, dynamic>>> getQuotes({
-  int limit = 50,
-  int offset = 0,
-}) async {
-  if (kIsWeb) {
-    final local = LocalDataService();
-    final qs = await local.loadQuotes();
-    final mapped = qs.map((q) => {
-      'quote': q['text'] ?? '',
-      'author': q['author'] ?? 'Unknown',
-      'category': q['category'] ?? '',
-      'tags': q['tags'] ?? <dynamic>[],
-      'is_premium': q['is_premium'] ?? false,
-      'created_at': q['created_at'],
-    }).toList();
-    if (offset >= mapped.length) return [];
-    final end = (offset + limit).clamp(0, mapped.length);
-    return mapped.sublist(offset, end);
-  }
-  return DBService.instance.getQuotesPage(limit: limit, offset: offset);
+List<Map<String, dynamic>>? _quotesCache;
+List<Map<String, dynamic>>? _categoriesCache;
+
+Future<List<Map<String, dynamic>>> _loadQuotesCached() async {
+  final existing = _quotesCache;
+  if (existing != null) return existing;
+  final local = LocalDataService();
+  final qs = await local.loadQuotes();
+  final mapped = qs.map((q) => {
+    'quote': q['text'] ?? '',
+    'author': q['author'] ?? 'Unknown',
+    'category': q['category'] ?? '',
+    'tags': q['tags'] ?? <dynamic>[],
+    'is_premium': q['is_premium'] ?? false,
+    'created_at': q['created_at'],
+  }).toList();
+  _quotesCache = mapped;
+  return mapped;
+}
+
+Future<List<Map<String, dynamic>>> _loadCategoriesCached() async {
+  final existing = _categoriesCache;
+  if (existing != null) return existing;
+  final local = LocalDataService();
+  final cats = await local.loadCategories();
+  final mapped = cats.map((c) => {
+    'id': c['id'] ?? '',
+    'name': c['name'] ?? '',
+  }).toList();
+  _categoriesCache = mapped;
+  return mapped;
+}
+
+Future<List<Map<String, dynamic>>> getQuotes({int limit = 50, int offset = 0}) async {
+  final mapped = await _loadQuotesCached();
+  if (offset >= mapped.length) return [];
+  final end = (offset + limit).clamp(0, mapped.length);
+  return mapped.sublist(offset, end);
 }
 
 Future<List<Map<String, dynamic>>> getCategories() async {
-  if (kIsWeb) {
-    final local = LocalDataService();
-    final cats = await local.loadCategories();
-    return cats.map((c) => {
-      'id': c['id'] ?? '',
-      'name': c['name'] ?? '',
-    }).toList();
-  }
-  return DBService.instance.getCategories();
+  return _loadCategoriesCached();
 }
 
 Future<List<Map<String, dynamic>>> getCategoryQuotes(
@@ -122,16 +130,11 @@ Future<List<Map<String, dynamic>>> getCategoryQuotes(
   int limit = 50,
   int offset = 0,
 }) async {
-  if (kIsWeb) {
-    final all = await getQuotes(limit: 1000000, offset: 0);
-    final filtered = all.where((q) => q['category'] == categoryId).toList();
-    if (offset >= filtered.length) return [];
-    final end = (offset + limit).clamp(0, filtered.length);
-    return filtered.sublist(offset, end);
-  }
-  return DBService.instance.getQuotesByCategory(
-    categoryId: categoryId,
-    limit: limit,
-    offset: offset,
-  );
+  final all = await _loadQuotesCached();
+  final filtered = all.where((q) => q['category'] == categoryId).toList();
+  if (offset >= filtered.length) return [];
+  final end = (offset + limit).clamp(0, filtered.length);
+  final page = filtered.sublist(offset, end);
+  page.shuffle();
+  return page;
 }

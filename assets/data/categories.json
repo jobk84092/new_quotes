@@ -1,5 +1,8 @@
 [
   {"id":"mindset","name":"Mindset"},
   {"id":"habits","name":"Habits"},
-  {"id":"growth","name":"Growth"}
+  {"id":"growth","name":"Growth"},
+  {"id":"focus","name":"Focus"},
+  {"id":"confidence","name":"Confidence"},
+  {"id":"gratitude","name":"Gratitude"}
 ]

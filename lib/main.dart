@@ -43,17 +43,10 @@ class MyApp extends StatelessWidget {
           onBackground: Colors.black, // Text color on background
         ),
         useMaterial3: true,
-        // fontFamily: GoogleFonts.quicksand().fontFamily,
-        textTheme: TextTheme(
-          titleLarge: GoogleFonts.quicksand(
-            textStyle: const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color: Colors.white),
-          ),
-          bodyLarge: GoogleFonts.quicksand(
-            textStyle: const TextStyle(fontSize: 16.0, color: Colors.white),
-          ),
-          bodyMedium: GoogleFonts.openSans(
-            textStyle: const TextStyle(fontSize: 14.0, color: Colors.white),
-          ),
+        textTheme: GoogleFonts.spaceGroteskTextTheme().copyWith(
+          titleLarge: GoogleFonts.spaceGrotesk(fontSize: 20.0, fontWeight: FontWeight.w700, color: Colors.white),
+          bodyLarge: GoogleFonts.inter(fontSize: 16.0, color: Colors.white),
+          bodyMedium: GoogleFonts.inter(fontSize: 14.0, color: Colors.white),
         ),
       ),
       home: FutureBuilder<bool>(
