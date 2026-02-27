@@ -1,4 +1,4 @@
-name: Build Android App Bundle
+name: Build Android (AAB + APK)
 
 on:
   workflow_dispatch:
@@ -44,3 +44,17 @@ jobs:
         with:
           name: app-release-aab
           path: build/app/outputs/bundle/release/app-release.aab
+
+      - name: Build APK (release)
+        run: flutter build apk --release
+
+      - name: APK size (bytes)
+        run: |
+          ls -la build/app/outputs/flutter-apk
+          stat -c "%s" build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
