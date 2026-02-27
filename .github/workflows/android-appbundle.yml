@@ -1,0 +1,46 @@
+name: Build Android App Bundle
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.32.5"
+          channel: stable
+          cache: true
+
+      - name: Flutter doctor (log)
+        run: flutter doctor -v
+
+      - name: Accept Android licenses (best-effort)
+        run: yes | flutter doctor --android-licenses > /dev/null || true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build appbundle (release)
+        run: flutter build appbundle --release
+
+      - name: Upload app bundle artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-aab
+          path: build/app/outputs/bundle/release/app-release.aab
