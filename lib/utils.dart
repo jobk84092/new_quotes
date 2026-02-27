@@ -1,6 +1,8 @@
 // utils.dart
 import 'dart:math' as math;
+import 'package:flutter/foundation.dart';
 import 'package:new_quotes/services/db_service.dart';
+import 'package:new_quotes/services/local_data_service.dart';
 import 'package:flutter/services.dart' show rootBundle, AssetManifest;
 import 'package:flutter/material.dart';
 
@@ -85,10 +87,33 @@ Future<List<Map<String, dynamic>>> getQuotes({
   int limit = 50,
   int offset = 0,
 }) async {
+  if (kIsWeb) {
+    final local = LocalDataService();
+    final qs = await local.loadQuotes();
+    final mapped = qs.map((q) => {
+      'quote': q['text'] ?? '',
+      'author': q['author'] ?? 'Unknown',
+      'category': q['category'] ?? '',
+      'tags': q['tags'] ?? <dynamic>[],
+      'is_premium': q['is_premium'] ?? false,
+      'created_at': q['created_at'],
+    }).toList();
+    if (offset >= mapped.length) return [];
+    final end = (offset + limit).clamp(0, mapped.length);
+    return mapped.sublist(offset, end);
+  }
   return DBService.instance.getQuotesPage(limit: limit, offset: offset);
 }
 
 Future<List<Map<String, dynamic>>> getCategories() async {
+  if (kIsWeb) {
+    final local = LocalDataService();
+    final cats = await local.loadCategories();
+    return cats.map((c) => {
+      'id': c['id'] ?? '',
+      'name': c['name'] ?? '',
+    }).toList();
+  }
   return DBService.instance.getCategories();
 }
 
@@ -97,6 +122,13 @@ Future<List<Map<String, dynamic>>> getCategoryQuotes(
   int limit = 50,
   int offset = 0,
 }) async {
+  if (kIsWeb) {
+    final all = await getQuotes(limit: 1000000, offset: 0);
+    final filtered = all.where((q) => q['category'] == categoryId).toList();
+    if (offset >= filtered.length) return [];
+    final end = (offset + limit).clamp(0, filtered.length);
+    return filtered.sublist(offset, end);
+  }
   return DBService.instance.getQuotesByCategory(
     categoryId: categoryId,
     limit: limit,

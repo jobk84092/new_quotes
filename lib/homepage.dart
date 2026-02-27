@@ -481,14 +481,13 @@ Widget _buildTopQuotesList(List<Map<String, dynamic>> quotes) {
   Widget _buildTopCategoriesCards() {
     // Replace the placeholders with actual top categories and corresponding images
     List<Map<String, String>> topCategories = [
-      {'slug': 'wisdom', 'name': 'Wisdom', 'image': 'assets/images/backgrounds/top_categories/wisdom.jpg'},
-      {'slug': 'life', 'name': 'Life', 'image': 'assets/images/backgrounds/top_categories/life.jpg'},
-      {'slug': 'love', 'name': 'Love', 'image': 'assets/images/backgrounds/top_categories/love.jpg'},
+      {'slug': 'mindset', 'name': 'Mindset', 'image': 'assets/images/bg1.jpg'},
+      {'slug': 'habits', 'name': 'Habits', 'image': 'assets/images/bg2.jpg'},
+      {'slug': 'growth', 'name': 'Growth', 'image': 'assets/images/bg3.jpg'},
       {'slug': 'inspiration', 'name': 'Inspiration', 'image': 'assets/images/bg4.jpg'},
-      {'slug': 'humor', 'name': 'Humor', 'image': 'assets/images/backgrounds/top_categories/humor.jpg'},
-      {'slug': 'hope', 'name': 'Hope', 'image': 'assets/images/backgrounds/top_categories/hope.jpg'},
-      {'slug': 'success', 'name': 'Success', 'image': 'assets/images/backgrounds/top_categories/lion.jpg'},
-      {'slug': 'philosophy', 'name': 'Philosophy', 'image': 'assets/images/backgrounds/top_categories/philosophy.jpg'},
+      {'slug': 'hope', 'name': 'Hope', 'image': 'assets/images/bg5.jpg'},
+      {'slug': 'success', 'name': 'Success', 'image': 'assets/images/bg6.jpg'},
+      {'slug': 'life', 'name': 'Life', 'image': 'assets/images/bg7.jpg'},
     ];
 
     return GridView.builder(
