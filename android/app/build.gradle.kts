@@ -8,7 +8,8 @@ plugins {
 android {
     namespace = "com.example.new_quotes"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    // Use the highest NDK required by transitive plugins (backward compatible).
+    ndkVersion = "27.0.12077973"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11

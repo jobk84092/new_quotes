@@ -416,7 +416,6 @@ class _HomePageState extends State<HomePage> {
           builder: (context) => CategoryQuotesPage(
             categoryName: category['name'] ?? 'Unknown Category',
             categoryId: (category['id'] ?? category['name'] ?? '').toString(),
-            categoryName: category['name'] ?? 'Unknown Category',
           ),
         ),
       );
@@ -510,7 +509,6 @@ Widget _buildTopQuotesList(List<Map<String, dynamic>> quotes) {
               builder: (context) => CategoryQuotesPage(
                 categoryName: topCategories[index]['name'] ?? 'Unknown Category',
                 categoryId: topCategories[index]['slug'] ?? '',
-                categoryName: topCategories[index]['name'] ?? 'Unknown Category',
               ),
             ),
           );
