@@ -7,8 +7,9 @@ class PremiumDbService {
 
   static const MethodChannel _channel = MethodChannel('new_quotes/premium_db');
 
-  // TODO: point this to your hosted premium DB.
-  static const String defaultUrl = 'https://example.com/quotes_premium.db';
+  // Hosted premium DB (GitHub Releases)
+  static const String defaultUrl =
+      'https://github.com/jobk84092/daily-quotes-assets/releases/download/db-v2/quotes_premium.db';
 
   Future<bool> hasDb() async {
     if (kIsWeb) return false;

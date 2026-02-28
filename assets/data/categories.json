@@ -1,8 +1,8 @@
 [
-  {"id":"mindset","name":"Mindset"},
-  {"id":"habits","name":"Habits"},
-  {"id":"growth","name":"Growth"},
+  {"id":"love","name":"Love"},
+  {"id":"motivation","name":"Motivation"},
+  {"id":"wisdom","name":"Wisdom"},
   {"id":"focus","name":"Focus"},
-  {"id":"confidence","name":"Confidence"},
-  {"id":"gratitude","name":"Gratitude"}
+  {"id":"inspiration","name":"Inspiration"},
+  {"id":"growth","name":"Growth"}
 ]

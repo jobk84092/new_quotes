@@ -6,6 +6,7 @@ import 'package:flutter/rendering.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:cross_file/cross_file.dart';
 import 'package:new_quotes/services/platform_media_service.dart';
+import 'package:new_quotes/services/favorites_service.dart';
 import 'package:new_quotes/widgets/quote_card.dart';
 import 'utils.dart';
 import 'package:new_quotes/widgets/ad_banner.dart';
@@ -21,6 +22,21 @@ class QuoteInfoPage extends StatefulWidget {
 
 class _QuoteInfoPageState extends State<QuoteInfoPage> {
   Uint8List? _userBgBytes;
+  bool _isFavorite = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadFavorite();
+  }
+
+  Future<void> _loadFavorite() async {
+    final ok = await FavoritesService.instance.isFavorite(widget.quote);
+    if (!mounted) return;
+    setState(() {
+      _isFavorite = ok;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +52,24 @@ class _QuoteInfoPageState extends State<QuoteInfoPage> {
       appBar: AppBar(
         title: const Text('Quote Details'),
         actions: [
+          IconButton(
+            tooltip: _isFavorite ? 'Remove favorite' : 'Add favorite',
+            icon: Icon(_isFavorite ? Icons.favorite : Icons.favorite_border),
+            onPressed: () async {
+              final nowFav = await FavoritesService.instance.toggleFavorite({
+                ...widget.quote,
+                'quote': quoteText,
+                'author': author,
+              });
+              if (!mounted) return;
+              setState(() {
+                _isFavorite = nowFav;
+              });
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(nowFav ? 'Saved to favorites' : 'Removed from favorites')),
+              );
+            },
+          ),
           IconButton(
             tooltip: 'Pick background',
             icon: const Icon(Icons.photo_library_outlined),

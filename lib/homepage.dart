@@ -3,10 +3,11 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:new_quotes/categories.dart';
 import 'package:new_quotes/categoryquotes.dart';
 import 'package:new_quotes/pages/quotes_list_page.dart';
+import 'package:new_quotes/pages/favorites_page.dart';
+import 'package:new_quotes/pages/search_page.dart';
 import 'package:new_quotes/quoteInfo.dart';
 import 'package:new_quotes/utils.dart';
 import 'package:new_quotes/widgets/ad_banner.dart';
@@ -48,58 +49,61 @@ class _HomePageState extends State<HomePage> {
     return HomePageData(categories: categories, quotes: quotes);
   }
 
-  // ToDO Delete this dummy data
-  List<Map<String, String>> quo = [
-    {
-      'quote': 'Quote 1',
-      'author': 'Author 1',
-      'image': 'assets/images/bg4.jpg'
-    },
-    {
-      'quote': 'Quote 2',
-      'author': 'Author 2',
-      'image': 'assets/images/bg2.jpg'
-    },
-    {
-      'quote': 'Quote 2',
-      'author': 'Author 2',
-      'image': 'assets/images/bg5.jpg'
-    },
-    {
-      'quote': 'Quote 2',
-      'author': 'Author 2',
-      'image': 'assets/images/bg7.jpg'
-    },
-    {
-      'quote': 'Quote 2',
-      'author': 'Author 2',
-      'image': 'assets/images/bg3.jpg'
-    },
-    {
-      'quote': 'Quote 2',
-      'author': 'Author 2',
-      'image': 'assets/images/bg6.jpg'
-    },
-    // Add more quotes as needed
-  ];
-
   @override
   Widget build(BuildContext context) {
   return Container(
     decoration: const BoxDecoration(gradient: AppTheme.brandGradient),
     child: Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Daily Quotes',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Image.asset(
+                'assets/logo/playstore.png',
+                width: 26,
+                height: 26,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
+              ),
+            ),
+            const SizedBox(width: 10),
+            const Text(
+              'Daily Quotes',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ],
         ),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
+        actions: [
+          IconButton(
+            tooltip: 'Search',
+            icon: const Icon(Icons.search),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SearchPage()),
+              );
+            },
+          ),
+          IconButton(
+            tooltip: 'Favorites',
+            icon: const Icon(Icons.favorite_border),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const FavoritesPage()),
+              );
+            },
+          ),
+        ],
       ),
       body: FutureBuilder<HomePageData>(
         future: _dataFuture,
@@ -281,83 +285,38 @@ class _HomePageState extends State<HomePage> {
 
   // SALUTATIONS END
   Widget _buildQuoteOfTheDayCard(BuildContext context, List<Map<String, dynamic>> globalQuotes) {
-    const String backgroundImagePath = 'assets/images/topquoteone.png';
+    final picked = globalQuotes.cast<Map<String, dynamic>>().firstWhere(
+      (q) => ((q['quote'] ?? '').toString().trim().length) <= 70,
+      orElse: () => globalQuotes.isNotEmpty ? globalQuotes.first : <String, dynamic>{},
+    );
 
-    String shortQuote = _getShortQuote(globalQuotes);
+    final quoteText = (picked['quote'] ?? '').toString().trim();
+    final author = (picked['author'] ?? 'Unknown').toString().trim();
+    final bg = getRandomNeutralImage(1);
 
-    return Container(
-      width: double.infinity,
-      margin: const EdgeInsets.all(8.0),
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage(backgroundImagePath),
-          fit: BoxFit.cover,
-        ),
-        borderRadius: BorderRadius.circular(10.0),
-      ),
-      child: ClipRRect(
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 2.0, sigmaY: 2.0),
-          child: Card(
-            elevation: 0,
-            color: Colors.black.withOpacity(0.2),
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 60.0, horizontal: 20.0),
-              height: 200.0,
-              child: Column(
-                children: [
-                  Expanded(
-                    child: Column(
-                      children: [
-                        Text(
-                          shortQuote,
-                          style: GoogleFonts.montserrat(
-                            textStyle: const TextStyle(
-                              fontSize: 18.0,
-                              color: Colors.white,
-                              shadows: [
-                                Shadow(
-                                  blurRadius: 2.0,
-                                  color: Colors.black,
-                                  offset: Offset(1, 1),
-                                ),
-                              ],
-                            ),
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 8.0),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Transform.translate(
-                              offset: const Offset(0, -6.0),
-                              child: Transform(
-                                alignment: Alignment.center,
-                                transform: Matrix4.rotationY(math.pi),
-                                child: const Icon(
-                                  Icons.format_quote,
-                                  color: Colors.white,
-                                  size: 14,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 4.0),
-                            Text(
-                              '- ${shortQuote.isNotEmpty ? globalQuotes.firstWhere((quote) => quote['quote'] == shortQuote)['author'] : 'Unknown Author'}',
-                              style: const TextStyle(fontSize: 14, color: Colors.white),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
-                      ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
+      child: QuoteCard(
+        quote: quoteText.isEmpty ? 'Welcome to Daily Quotes.' : quoteText,
+        author: author.isEmpty ? 'Unknown' : author,
+        backgroundImage: bg,
+        onTap: quoteText.isEmpty
+            ? null
+            : () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => QuoteInfoPage(
+                      quote: {
+                        'quote': quoteText,
+                        'author': author,
+                        'image': bg,
+                      },
                     ),
                   ),
-                ],
-              ),
-            ),
-          ),
-        ),
+                );
+              },
+        showToolbar: false,
       ),
     );
   }
@@ -477,13 +436,12 @@ Widget _buildTopQuotesList(List<Map<String, dynamic>> quotes) {
   Widget _buildTopCategoriesCards() {
     // Replace the placeholders with actual top categories and corresponding images
     List<Map<String, String>> topCategories = [
-      {'slug': 'mindset', 'name': 'Mindset', 'image': 'assets/images/bg1.jpg'},
-      {'slug': 'habits', 'name': 'Habits', 'image': 'assets/images/bg2.jpg'},
-      {'slug': 'growth', 'name': 'Growth', 'image': 'assets/images/bg3.jpg'},
-      {'slug': 'inspiration', 'name': 'Inspiration', 'image': 'assets/images/bg4.jpg'},
-      {'slug': 'hope', 'name': 'Hope', 'image': 'assets/images/bg5.jpg'},
-      {'slug': 'success', 'name': 'Success', 'image': 'assets/images/bg6.jpg'},
-      {'slug': 'life', 'name': 'Life', 'image': 'assets/images/bg7.jpg'},
+      {'slug': 'love', 'name': 'Love', 'image': getRandomNeutralImage(1)},
+      {'slug': 'motivation', 'name': 'Motivation', 'image': getRandomNeutralImage(1)},
+      {'slug': 'wisdom', 'name': 'Wisdom', 'image': getRandomNeutralImage(1)},
+      {'slug': 'focus', 'name': 'Focus', 'image': getRandomNeutralImage(1)},
+      {'slug': 'inspiration', 'name': 'Inspiration', 'image': getRandomNeutralImage(1)},
+      {'slug': 'growth', 'name': 'Growth', 'image': getRandomNeutralImage(1)},
     ];
 
     return GridView.builder(
@@ -539,7 +497,7 @@ Widget _buildTopQuotesList(List<Map<String, dynamic>> quotes) {
               padding: const EdgeInsets.all(4.0),
               child: Container(
                 decoration: const BoxDecoration(
-                  color: Colors.blueGrey,
+                  color: AppTheme.surfaceDark,
                   borderRadius: BorderRadius.vertical(
                     bottom: Radius.circular(8.0),
                   ),
@@ -616,8 +574,6 @@ class QuotesSlider extends StatefulWidget {
 }
 
 class _QuotesSliderState extends State<QuotesSlider> {
-  List<String> neutralImages = [];
-
   @override
   void initState() {
     super.initState();
@@ -627,7 +583,6 @@ class _QuotesSliderState extends State<QuotesSlider> {
 
 
 
-  // Randomly select an image from neutralImages
   math.Random random = math.Random();
   String randomNeutralImage = '';
   int currentIndex = 0;
@@ -637,8 +592,6 @@ class _QuotesSliderState extends State<QuotesSlider> {
     randomNeutralImage = neutralImages.isNotEmpty
         ? neutralImages[random.nextInt(neutralImages.length)]
         : 'assets/images/topquoteone.png';
-
-    print('randomNeutralImage: ---------- $randomNeutralImage');
 
     return Column(
       children: [
@@ -680,90 +633,28 @@ class _QuotesSliderState extends State<QuotesSlider> {
   }
 
   Widget _buildQuoteCard(Map<String, String> quote) {
-    return GestureDetector(
+    final q = (quote['quote'] ?? '').toString();
+    final a = (quote['author'] ?? '').toString();
+    final bg = (quote['image'] ?? randomNeutralImage).toString();
+
+    return QuoteCard(
+      quote: q,
+      author: a,
+      backgroundImage: bg,
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => QuoteInfoPage(quote: quote),
+            builder: (context) => QuoteInfoPage(
+              quote: {
+                ...quote,
+                'image': bg,
+              },
+            ),
           ),
         );
       },
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(16.0), // Adjust the radius as needed
-          child: Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: (quote['image'] != null && quote['image']!.startsWith('http'))
-                    ? NetworkImage(quote['image']!) as ImageProvider<Object>
-                    : AssetImage(quote['image'] ?? randomNeutralImage) as ImageProvider<Object>,
-                fit: BoxFit.cover,
-              ),
-            ),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 1, sigmaY: 1),
-              child: Container(
-                color: Colors.black.withOpacity(0.2),
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          quote['quote'] ?? 'No quote available',
-                          style: GoogleFonts.montserrat(
-                            textStyle: const TextStyle(
-                              fontSize: 18.0,
-                              color: Colors.white,
-                              shadows: [
-                                Shadow(
-                                  blurRadius: 2.0,
-                                  color: Colors.black,
-                                  offset: Offset(1, 1),
-                                ),
-                              ],
-                            ),
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 8.0),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Transform.translate(
-                              offset: const Offset(0, -6.0),
-                              child: Transform(
-                                alignment: Alignment.center,
-                                transform: Matrix4.rotationY(math.pi),
-                                child: const Icon(
-                                  Icons.format_quote,
-                                  color: Colors.white,
-                                  size: 14,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 4.0),
-                            Text(
-                              '- ${quote['author'] ?? 'Unknown Author'}',
-                              style: const TextStyle(fontSize: 14, color: Colors.white),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
+      showToolbar: false,
     );
   }
 }

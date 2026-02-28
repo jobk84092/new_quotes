@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:introduction_screen/introduction_screen.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:new_quotes/homepage.dart';
 import 'package:new_quotes/onboarding_gate.dart';
 import 'package:new_quotes/theme/app_theme.dart';
@@ -21,7 +20,7 @@ class IntroductionScreens extends StatelessWidget {
   }
   @override
   Widget build(BuildContext context) {
-    final quicksandFontFamily = GoogleFonts.quicksand().fontFamily;
+    final tt = Theme.of(context).textTheme;
     return Scaffold(
       // appBar: AppBar(),
       body: IntroductionScreen(
@@ -56,24 +55,18 @@ class IntroductionScreens extends StatelessWidget {
           showSkipButton: true,
           next: Text(
             "Next",
-            style: GoogleFonts.quicksand(
-              color: Colors.white,
-              fontSize: 20,
-            ),
+            style: (tt.titleMedium ?? const TextStyle(fontSize: 18, fontWeight: FontWeight.w600))
+                .copyWith(color: Colors.white),
           ),
           done: Text(
             "See quotes",
-            style: GoogleFonts.quicksand(
-              color: Colors.white,
-              fontSize: 20,
-            ),
+            style: (tt.titleMedium ?? const TextStyle(fontSize: 18, fontWeight: FontWeight.w600))
+                .copyWith(color: Colors.white),
           ),
           skip: Text(
             "Skip to quotes",
-            style: GoogleFonts.quicksand(
-              color: Colors.white,
-              fontSize: 20,
-            ),
+            style: (tt.titleMedium ?? const TextStyle(fontSize: 18, fontWeight: FontWeight.w600))
+                .copyWith(color: Colors.white),
           ),
           dotsDecorator: getDotsDecorator()),
 
@@ -95,18 +88,21 @@ class IntroductionScreens extends StatelessWidget {
 
   //method to customise the page style
   PageDecoration getPageDecoration() {
-    final quicksandFontFamily = GoogleFonts.quicksand().fontFamily;
-
     return PageDecoration(
       imagePadding: const EdgeInsets.only(top: 120),
       bodyPadding: const EdgeInsets.only(top: 8, left: 20, right: 20),
       titlePadding: const EdgeInsets.only(top: 50),
-      bodyTextStyle: GoogleFonts.quicksand(
+      bodyTextStyle: const TextStyle(
         color: Colors.white,
-        fontSize: 20,
+        fontSize: 18,
+        height: 1.35,
+        fontWeight: FontWeight.w500,
       ),
-      titleTextStyle: GoogleFonts.ebGaramond(
-        fontSize: 40,
+      titleTextStyle: const TextStyle(
+        color: Colors.white,
+        fontSize: 34,
+        height: 1.1,
+        fontWeight: FontWeight.w800,
       ),
       // Set gradient background
       boxDecoration: const BoxDecoration(gradient: AppTheme.brandGradient),

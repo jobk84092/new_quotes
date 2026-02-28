@@ -1,4 +1,4 @@
-name: Build Android APK
+name: Build Android APK & AAB
 
 on:
   workflow_dispatch:
@@ -59,3 +59,28 @@ jobs:
         with:
           name: new_quotes-apk
           path: ${{ env.APK_OUT }}
+
+      - name: Build AAB (release)
+        run: flutter build appbundle --release
+
+      - name: Rename AAB (include version + sha)
+        shell: bash
+        run: |
+          set -euo pipefail
+          SHA_SHORT="${GITHUB_SHA::7}"
+          VERSION=$(grep '^version:' pubspec.yaml | sed 's/version: *//' | cut -d'+' -f1)
+          AAB_IN="build/app/outputs/bundle/release/app-release.aab"
+          AAB_OUT="build/app/outputs/bundle/release/daily-quotes-${VERSION}-${GITHUB_RUN_NUMBER}-${SHA_SHORT}.aab"
+          mv "$AAB_IN" "$AAB_OUT"
+          echo "AAB_OUT=$AAB_OUT" >> "$GITHUB_ENV"
+
+      - name: AAB size (bytes)
+        run: |
+          ls -la build/app/outputs/bundle/release
+          stat -c "%s" "${AAB_OUT}"
+
+      - name: Upload AAB artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-quotes-aab
+          path: ${{ env.AAB_OUT }}

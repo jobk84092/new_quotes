@@ -1,0 +1,225 @@
+# Quotes CSV cleaning report
+
+- Input CSV: `/Users/jobkimani/new_quotes/20240118 final set.csv`
+- Output JSON: `/Users/jobkimani/new_quotes/assets/data/quotes.json`
+- Total output quotes: **65534**
+- Dropped (empty quote): **0**
+- Dropped (unknown category): **32298**
+
+## Category counts
+- **wisdom**: 42888
+- **love**: 8572
+- **inspiration**: 6786
+- **growth**: 3123
+- **motivation**: 3020
+- **focus**: 1145
+
+## Mapping stats
+- **default_wisdom**: 32298
+- **category**: 14072
+- **quote_text**: 12569
+- **tag**: 6595
+
+## Notes / issues (first 100)
+- Row 4: cleaned quote text
+- Row 7: cleaned quote text
+- Row 9: cleaned quote text
+- Row 18: cleaned quote text
+- Row 20: unknown category 'astarryeyedparil' / tag 'beauty' → defaulted to 'wisdom'
+- Row 22: unknown category 'breaking-out' / tag 'goverment' → defaulted to 'wisdom'
+- Row 22: cleaned quote text
+- Row 23: unknown category 'failure' / tag 'fear' → defaulted to 'wisdom'
+- Row 23: cleaned quote text
+- Row 28: unknown category 'darius-radmanesh' / tag 'daryavesh-rothmensch' → defaulted to 'wisdom'
+- Row 28: cleaned quote text
+- Row 29: cleaned quote text
+- Row 30: unknown category 'appreciation' / tag 'leaders' → defaulted to 'wisdom'
+- Row 32: unknown category 'personality' / tag 'personality' → defaulted to 'wisdom'
+- Row 32: cleaned quote text
+- Row 33: unknown category 'harry-potter' / tag 'harry-potter' → defaulted to 'wisdom'
+- Row 36: cleaned quote text
+- Row 37: cleaned quote text
+- Row 38: unknown category 'alain-de-botton' / tag 'anger' → defaulted to 'wisdom'
+- Row 39: unknown category 'holloway-pack' / tag 'instinct' → defaulted to 'wisdom'
+- Row 40: unknown category 'sex' / tag 'sexuality' → defaulted to 'wisdom'
+- Row 43: unknown category 'Prerak Trivedi' / tag 'Prerak Trivedi' → defaulted to 'wisdom'
+- Row 44: unknown category 'Pablo' / tag 'Pablo' → defaulted to 'wisdom'
+- Row 44: cleaned quote text
+- Row 45: unknown category 'Akshay Dubey' / tag 'Akshay Dubey' → defaulted to 'wisdom'
+- Row 45: cleaned quote text
+- Row 46: cleaned quote text
+- Row 47: unknown category 'Marcel Proust' / tag 'Swann's Way' → defaulted to 'wisdom'
+- Row 47: cleaned quote text
+- Row 48: cleaned quote text
+- Row 49: cleaned quote text
+- Row 53: cleaned quote text
+- Row 54: unknown category 'being-single' / tag 'sad' → defaulted to 'wisdom'
+- Row 56: unknown category 'prayer' / tag 'prayer' → defaulted to 'wisdom'
+- Row 57: cleaned quote text
+- Row 58: unknown category 'mathematics' / tag 'mathematics' → defaulted to 'wisdom'
+- Row 60: unknown category 'pakistan' / tag 'satire' → defaulted to 'wisdom'
+- Row 61: cleaned quote text
+- Row 62: unknown category 'pakistan' / tag 'politics' → defaulted to 'wisdom'
+- Row 62: cleaned quote text
+- Row 63: unknown category 'death' / tag 'murder' → defaulted to 'wisdom'
+- Row 64: unknown category 'Billy Graham' / tag 'Billy Graham in Quotes' → defaulted to 'wisdom'
+- Row 64: cleaned quote text
+- Row 67: unknown category 'choices' / tag 'circumstances' → defaulted to 'wisdom'
+- Row 68: unknown category 'atheism' / tag 'poet' → defaulted to 'wisdom'
+- Row 68: cleaned quote text
+- Row 72: unknown category 'erotica' / tag 'glamour' → defaulted to 'wisdom'
+- Row 73: unknown category 'bucket' / tag 'crying' → defaulted to 'wisdom'
+- Row 74: unknown category 'lonely' / tag 'promise' → defaulted to 'wisdom'
+- Row 77: unknown category 'erotica' / tag 'erotica' → defaulted to 'wisdom'
+- Row 78: cleaned quote text
+- Row 80: unknown category 'calm' / tag 'holiday' → defaulted to 'wisdom'
+- Row 83: cleaned quote text
+- Row 88: cleaned quote text
+- Row 90: unknown category 'Samuel Egerton Brydges' / tag 'Samuel Egerton Brydges' → defaulted to 'wisdom'
+- Row 90: cleaned quote text
+- Row 92: unknown category 'Do I do what I suppose to be doing?¢' / tag 'Do I do what I suppose to be doing?¢' → defaulted to 'wisdom'
+- Row 92: cleaned quote text
+- Row 93: cleaned quote text
+- Row 95: unknown category 'alone' / tag 'loneliness' → defaulted to 'wisdom'
+- Row 95: cleaned quote text
+- Row 97: unknown category 'peace' / tag 'violence' → defaulted to 'wisdom'
+- Row 98: unknown category 'degree' / tag 'jobs' → defaulted to 'wisdom'
+- Row 100: cleaned quote text
+- Row 102: unknown category 'consciously-constructive' / tag 'happiness' → defaulted to 'wisdom'
+- Row 104: unknown category 'consciously-constructive' / tag 'greedership' → defaulted to 'wisdom'
+- Row 105: unknown category 'bible' / tag 'corinthians' → defaulted to 'wisdom'
+- Row 109: cleaned quote text
+- Row 110: unknown category 'bible' / tag 'bible' → defaulted to 'wisdom'
+- Row 111: unknown category 'accept' / tag 'aceitar' → defaulted to 'wisdom'
+- Row 112: unknown category 'art' / tag 'arte' → defaulted to 'wisdom'
+- Row 113: unknown category '1-minuto-na-palma-da-mÌ£o' / tag 'ansiedade' → defaulted to 'wisdom'
+- Row 116: unknown category 'diferenÌ¤a' / tag 'difference' → defaulted to 'wisdom'
+- Row 118: unknown category 'altruism' / tag 'altruÌ_smo' → defaulted to 'wisdom'
+- Row 119: unknown category 'accept' / tag 'aceitar' → defaulted to 'wisdom'
+- Row 119: cleaned quote text
+- Row 122: unknown category 'carpe-diem' / tag 'determination' → defaulted to 'wisdom'
+- Row 122: cleaned quote text
+- Row 123: unknown category 'aware' / tag 'christmas' → defaulted to 'wisdom'
+- Row 126: cleaned quote text
+- Row 127: unknown category '1-minuto-na-palma-da-mÌ£o' / tag 'agora' → defaulted to 'wisdom'
+- Row 128: unknown category '1-minuto-na-palma-da-mÌ£o' / tag 'agora' → defaulted to 'wisdom'
+- Row 132: cleaned quote text
+- Row 133: unknown category 'aprender' / tag 'determination' → defaulted to 'wisdom'
+- Row 137: cleaned quote text
+- Row 138: unknown category 'food-for-thought' / tag 'food-for-thought' → defaulted to 'wisdom'
+- Row 138: cleaned quote text
+- Row 139: unknown category 'gossip' / tag 'reputation' → defaulted to 'wisdom'
+- Row 140: unknown category 'bibel' / tag 'corinthians' → defaulted to 'wisdom'
+- Row 141: unknown category 'empty-words' / tag 'food-for-thought' → defaulted to 'wisdom'
+- Row 141: cleaned quote text
+- Row 142: unknown category '3) anything that gets invented after youre thirty is against the natural order of things and the beginning of the end of civilization as we know it until its been around for about ten years when it gradually turns out to be alright really.' / tag '3) anything that gets invented after youre thirty is against the natural order of things and the beginning of the end of civilization as we know it until its been around for about ten years when it gradually turns out to be alright really.' → defaulted to 'wisdom'
+- Row 142: cleaned quote text
+- Row 143: cleaned quote text
+- Row 144: unknown category 'Israelmore Ayivor' / tag 'Israelmore Ayivor' → defaulted to 'wisdom'
+- Row 144: cleaned quote text
+- Row 146: unknown category 'Anonymous' / tag 'Anonymous' → defaulted to 'wisdom'
+- Row 146: cleaned quote text
+- Row 147: cleaned quote text
+- Row 148: unknown category 'sadness' / tag 'sweet-smile' → defaulted to 'wisdom'
+
+## Suspicious rows (first 100)
+- Row 3: very long quote (410 chars)
+- Row 4: very long quote (366 chars)
+- Row 4: replacement characters present (check source encoding)
+- Row 5: very long quote (410 chars)
+- Row 7: very long quote (261 chars)
+- Row 14: replacement characters present (check source encoding)
+- Row 23: very long quote (360 chars)
+- Row 25: very long quote (359 chars)
+- Row 27: very long quote (931 chars)
+- Row 31: very long quote (233 chars)
+- Row 34: very long quote (370 chars)
+- Row 42: very long quote (350 chars)
+- Row 52: very long quote (461 chars)
+- Row 53: replacement characters present (check source encoding)
+- Row 55: very long quote (267 chars)
+- Row 79: very long quote (238 chars)
+- Row 80: very long quote (298 chars)
+- Row 82: very long quote (543 chars)
+- Row 85: very long quote (568 chars)
+- Row 87: very long quote (299 chars)
+- Row 88: very long quote (739 chars)
+- Row 89: very long quote (252 chars)
+- Row 95: very long quote (760 chars)
+- Row 96: very long quote (1202 chars)
+- Row 97: very long quote (295 chars)
+- Row 100: very long quote (247 chars)
+- Row 100: replacement characters present (check source encoding)
+- Row 102: very long quote (258 chars)
+- Row 104: very long quote (252 chars)
+- Row 108: very long quote (370 chars)
+- Row 110: very long quote (631 chars)
+- Row 115: very long quote (720 chars)
+- Row 120: very long quote (946 chars)
+- Row 123: very long quote (296 chars)
+- Row 126: very long quote (1964 chars)
+- Row 135: very long quote (376 chars)
+- Row 145: very long quote (332 chars)
+- Row 147: very long quote (516 chars)
+- Row 157: very long quote (225 chars)
+- Row 159: very long quote (403 chars)
+- Row 167: very long quote (228 chars)
+- Row 171: very long quote (244 chars)
+- Row 199: very long quote (681 chars)
+- Row 209: very long quote (228 chars)
+- Row 211: very long quote (547 chars)
+- Row 212: replacement characters present (check source encoding)
+- Row 230: replacement characters present (check source encoding)
+- Row 235: very long quote (1020 chars)
+- Row 235: replacement characters present (check source encoding)
+- Row 236: very long quote (355 chars)
+- Row 240: very long quote (238 chars)
+- Row 245: very long quote (251 chars)
+- Row 246: very long quote (222 chars)
+- Row 248: very long quote (248 chars)
+- Row 249: very long quote (313 chars)
+- Row 254: very long quote (247 chars)
+- Row 256: very long quote (222 chars)
+- Row 261: very long quote (436 chars)
+- Row 266: very long quote (301 chars)
+- Row 267: very long quote (264 chars)
+- Row 268: very long quote (230 chars)
+- Row 269: very long quote (526 chars)
+- Row 280: very long quote (233 chars)
+- Row 283: very long quote (388 chars)
+- Row 290: very long quote (229 chars)
+- Row 291: very long quote (593 chars)
+- Row 292: very long quote (222 chars)
+- Row 332: very long quote (260 chars)
+- Row 333: very long quote (245 chars)
+- Row 337: very long quote (975 chars)
+- Row 340: very long quote (247 chars)
+- Row 341: very long quote (248 chars)
+- Row 348: very long quote (264 chars)
+- Row 348: replacement characters present (check source encoding)
+- Row 349: very long quote (312 chars)
+- Row 349: replacement characters present (check source encoding)
+- Row 350: very long quote (246 chars)
+- Row 354: very long quote (330 chars)
+- Row 357: very long quote (248 chars)
+- Row 359: very long quote (248 chars)
+- Row 361: very long quote (259 chars)
+- Row 362: very long quote (257 chars)
+- Row 363: very long quote (264 chars)
+- Row 364: very long quote (254 chars)
+- Row 365: very long quote (253 chars)
+- Row 366: very long quote (254 chars)
+- Row 370: very long quote (318 chars)
+- Row 371: very long quote (223 chars)
+- Row 376: very long quote (322 chars)
+- Row 381: very long quote (222 chars)
+- Row 383: very long quote (321 chars)
+- Row 385: very long quote (315 chars)
+- Row 412: very long quote (1106 chars)
+- Row 415: very long quote (328 chars)
+- Row 416: very long quote (609 chars)
+- Row 417: very long quote (247 chars)
+- Row 420: very long quote (584 chars)
+- Row 422: very long quote (563 chars)
+- Row 426: very long quote (314 chars)
+- Row 430: very long quote (291 chars)

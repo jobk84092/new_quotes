@@ -25,7 +25,8 @@ String getRandomNeutralImage([int count = 50]) {
 
 // Offline: load neutral images from bundled assets
 Future<void> loadNeutralImages([int count = 50]) async {
-  final List<String> imagePaths = <String>[];
+  final List<String> neutral = <String>[];
+  final List<String> other = <String>[];
 
   try {
     final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
@@ -33,12 +34,30 @@ Future<void> loadNeutralImages([int count = 50]) async {
 
     for (final key in allAssets) {
       if (key.startsWith('assets/images/') && (key.endsWith('.jpg') || key.endsWith('.jpeg') || key.endsWith('.png'))) {
-        imagePaths.add(key);
+        if (key.startsWith('assets/images/neutrals/')) {
+          neutral.add(key);
+        } else {
+          other.add(key);
+        }
       }
     }
   } catch (_) {}
 
-  neutralImages = imagePaths.isEmpty ? ['assets/images/topquoteone.png'] : imagePaths.take(count).toList();
+  if (neutral.isEmpty && other.isEmpty) {
+    neutralImages = ['assets/images/topquoteone.png'];
+    return;
+  }
+
+  final out = <String>[];
+  for (final p in neutral) {
+    if (out.length >= count) break;
+    out.add(p);
+  }
+  for (final p in other) {
+    if (out.length >= count) break;
+    out.add(p);
+  }
+  neutralImages = out.isEmpty ? ['assets/images/topquoteone.png'] : out;
 }
 
 Future<List<String>> fetchNeutralImages([int count = 50]) async {
@@ -134,7 +153,11 @@ Future<List<Map<String, dynamic>>> getQuotes({int limit = 50, int offset = 0}) a
   }
 
   final mapped = await _loadQuotesCached();
-  final capped = mapped.length > freeQuotesCap ? mapped.sublist(0, freeQuotesCap) : mapped;
+  final visible = premium
+      ? mapped
+      : mapped.where((q) => (q['is_premium'] == true) ? false : true).toList();
+
+  final capped = visible.length > freeQuotesCap ? visible.sublist(0, freeQuotesCap) : visible;
   if (offset >= capped.length) return [];
   final end = (offset + limit).clamp(0, capped.length);
   return capped.sublist(offset, end);
@@ -169,7 +192,10 @@ Future<List<Map<String, dynamic>>> getCategoryQuotes(
   }
 
   final all = await _loadQuotesCached();
-  final capped = all.length > freeQuotesCap ? all.sublist(0, freeQuotesCap) : all;
+  final visible = premium
+      ? all
+      : all.where((q) => (q['is_premium'] == true) ? false : true).toList();
+  final capped = visible.length > freeQuotesCap ? visible.sublist(0, freeQuotesCap) : visible;
   final filtered = capped.where((q) => q['category'] == categoryId).toList();
   if (offset >= filtered.length) return [];
   final end = (offset + limit).clamp(0, filtered.length);
