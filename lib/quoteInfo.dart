@@ -3,6 +3,8 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/rendering.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:cross_file/cross_file.dart';
 import 'package:new_quotes/services/platform_media_service.dart';
 import 'package:new_quotes/widgets/quote_card.dart';
 import 'utils.dart';
@@ -73,12 +75,17 @@ class _QuoteInfoPageState extends State<QuoteInfoPage> {
           IconButton(
             tooltip: 'Share text',
             icon: const Icon(Icons.share),
-            onPressed: () {
+            onPressed: () async {
               if (quoteText.isEmpty) return;
-              Clipboard.setData(ClipboardData(text: shareText));
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Copied — paste to share')),
-              );
+              try {
+                await Share.share(shareText);
+              } catch (_) {
+                await Clipboard.setData(ClipboardData(text: shareText));
+                if (!mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Copied — paste to share')),
+                );
+              }
             },
           ),
           IconButton(
@@ -92,15 +99,24 @@ class _QuoteInfoPageState extends State<QuoteInfoPage> {
               final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
               final pngBytes = byteData?.buffer.asUint8List();
               if (pngBytes == null || pngBytes.isEmpty) return;
-              final ok = await PlatformMediaService.sharePngBytes(
-                pngBytes,
-                filename: 'quote.png',
-              );
-              if (!context.mounted) return;
-              if (!ok) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Share failed')),
+              try {
+                final xf = XFile.fromData(
+                  pngBytes,
+                  mimeType: 'image/png',
+                  name: 'quote.png',
                 );
+                await Share.shareXFiles([xf], text: shareText);
+              } catch (_) {
+                final ok = await PlatformMediaService.sharePngBytes(
+                  pngBytes,
+                  filename: 'quote.png',
+                );
+                if (!context.mounted) return;
+                if (!ok) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Share failed')),
+                  );
+                }
               }
             },
           ),

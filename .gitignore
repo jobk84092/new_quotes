@@ -33,6 +33,12 @@ migrate_working_dir/
 .pub/
 /build/
 
+# Local content folders (not app assets)
+/SEO/
+/sketches/
+/images/
+/quotes logos and images for Playstore/
+
 # Symbolication related
 app.*.symbols
 
