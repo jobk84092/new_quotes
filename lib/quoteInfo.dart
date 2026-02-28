@@ -1,6 +1,7 @@
 // quoteInfo.dart
 import 'package:flutter/material.dart';
 import 'dart:ui';
+import 'package:flutter/services.dart';
 import 'utils.dart';
 import 'package:new_quotes/widgets/ad_banner.dart';
 
@@ -11,9 +12,39 @@ class QuoteInfoPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final quoteText = (quote['quote'] ?? '').toString().trim();
+    final author = (quote['author'] ?? 'Unknown').toString().trim();
+    final shareText = author.isEmpty || author == 'Unknown'
+        ? quoteText
+        : '$quoteText\n\n— $author';
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Quote Details'),
+        actions: [
+          IconButton(
+            tooltip: 'Copy',
+            icon: const Icon(Icons.copy),
+            onPressed: () async {
+              if (quoteText.isEmpty) return;
+              await Clipboard.setData(ClipboardData(text: shareText));
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Copied')),
+              );
+            },
+          ),
+          IconButton(
+            tooltip: 'Share',
+            icon: const Icon(Icons.share),
+            onPressed: () {
+              if (quoteText.isEmpty) return;
+              Clipboard.setData(ClipboardData(text: shareText));
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Copied — paste to share')),
+              );
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [

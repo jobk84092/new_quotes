@@ -1,4 +1,4 @@
-name: Build Android (AAB + APK)
+name: Build Android APK
 
 on:
   workflow_dispatch:
@@ -36,15 +36,6 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Build appbundle (release)
-        run: flutter build appbundle --release
-
-      - name: Upload app bundle artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-release-aab
-          path: build/app/outputs/bundle/release/app-release.aab
-
       - name: Build APK (release)
         run: flutter build apk --release
 
@@ -55,19 +46,16 @@ jobs:
           SHA_SHORT="${GITHUB_SHA::7}"
           APK_IN="build/app/outputs/flutter-apk/app-release.apk"
           APK_OUT="build/app/outputs/flutter-apk/new_quotes-${GITHUB_RUN_NUMBER}-${SHA_SHORT}.apk"
-          cp "$APK_IN" "$APK_OUT"
+          mv "$APK_IN" "$APK_OUT"
           echo "APK_OUT=$APK_OUT" >> "$GITHUB_ENV"
 
       - name: APK size (bytes)
         run: |
           ls -la build/app/outputs/flutter-apk
-          stat -c "%s" build/app/outputs/flutter-apk/app-release.apk
           stat -c "%s" "${APK_OUT}"
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: new_quotes-apk
-          path: |
-            build/app/outputs/flutter-apk/app-release.apk
-            ${{ env.APK_OUT }}
+          path: ${{ env.APK_OUT }}
