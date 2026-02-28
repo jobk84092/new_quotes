@@ -5,6 +5,7 @@ import 'package:introduction_screen/introduction_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:new_quotes/homepage.dart';
 import 'package:new_quotes/onboarding_gate.dart';
+import 'package:new_quotes/theme/app_theme.dart';
 
 /// Onboarding screens - no network/data loading. Completes immediately.
 /// HomePage (with data) loads only when user taps Done/Skip.
@@ -108,13 +109,7 @@ class IntroductionScreens extends StatelessWidget {
         fontSize: 40,
       ),
       // Set gradient background
-      boxDecoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF536FFE), Color(0xFFFC66C5)],
-        ),
-      ),
+      boxDecoration: const BoxDecoration(gradient: AppTheme.brandGradient),
     );
   }
 
@@ -123,8 +118,8 @@ class IntroductionScreens extends StatelessWidget {
   DotsDecorator getDotsDecorator() {
     return const DotsDecorator(
       spacing: EdgeInsets.symmetric(horizontal: 2),
-      activeColor: Color(0xFFFC66C5), // Use a single color for active dots
-      color: Color(0xFF536FFE), // Use a single color for inactive dots
+      activeColor: AppTheme.brandB,
+      color: AppTheme.brandA,
       activeSize: Size(10, 10), // Adjust the active dot size
       size: Size(8, 8), // Adjust the inactive dot size
       shape: RoundedRectangleBorder(

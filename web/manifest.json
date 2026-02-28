@@ -1,11 +1,11 @@
 {
-    "name": "new_quotes",
-    "short_name": "new_quotes",
+    "name": "Daily Quotes",
+    "short_name": "Daily Quotes",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Daily Quotes — offline quotes and categories.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

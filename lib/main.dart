@@ -6,6 +6,7 @@ import 'package:new_quotes/homepage.dart';
 import 'package:new_quotes/intro_slider/introduction_screens.dart';
 import 'package:new_quotes/onboarding_gate.dart';
 import 'package:new_quotes/services/purchase_service.dart';
+import 'package:new_quotes/theme/app_theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,25 +31,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Quotes App',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSwatch(
-          primarySwatch: Colors.blueGrey, // Set your primary color
-          accentColor: Colors.deepOrange, // Set your accent color
-        ).copyWith(
-          secondary: Colors.teal, // Optional secondary color
-          background: Colors.purpleAccent.withOpacity(0.3), // Use the starting color of the gradient
-          onPrimary: Colors.black, // Text color on primary background
-          onSecondary: Colors.blueGrey, // Text color on secondary background
-          onBackground: Colors.black, // Text color on background
-        ),
-        useMaterial3: true,
-        textTheme: GoogleFonts.spaceGroteskTextTheme().copyWith(
-          titleLarge: GoogleFonts.spaceGrotesk(fontSize: 20.0, fontWeight: FontWeight.w700, color: Colors.white),
-          bodyLarge: GoogleFonts.inter(fontSize: 16.0, color: Colors.white),
-          bodyMedium: GoogleFonts.inter(fontSize: 14.0, color: Colors.white),
-        ),
-      ),
+      title: 'Daily Quotes',
+      theme: AppTheme.build(),
       home: FutureBuilder<bool>(
         future: _shouldShowOnboardingFuture,
         builder: (context, snapshot) {

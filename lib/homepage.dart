@@ -12,6 +12,7 @@ import 'package:new_quotes/utils.dart';
 import 'package:new_quotes/widgets/ad_banner.dart';
 import 'package:new_quotes/widgets/quote_card.dart';
 import 'package:new_quotes/widgets/support_card.dart';
+import 'package:new_quotes/theme/app_theme.dart';
 
 class HomePageData {
   final List<Map<String, dynamic>> categories;
@@ -85,17 +86,11 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
   return Container(
-    decoration: const BoxDecoration(
-      gradient: LinearGradient(
-        begin: Alignment.bottomLeft,
-        end: Alignment.topRight,
-        colors: [Colors.blue, Colors.pink],
-      ),
-    ),
+    decoration: const BoxDecoration(gradient: AppTheme.brandGradient),
     child: Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Inspirational & Motivational Quotes',
+          'Daily Quotes',
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
