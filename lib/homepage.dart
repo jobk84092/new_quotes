@@ -10,6 +10,7 @@ import 'package:new_quotes/pages/quotes_list_page.dart';
 import 'package:new_quotes/quoteInfo.dart';
 import 'package:new_quotes/utils.dart';
 import 'package:new_quotes/widgets/ad_banner.dart';
+import 'package:new_quotes/widgets/quote_card.dart';
 import 'package:new_quotes/widgets/support_card.dart';
 
 class HomePageData {
@@ -590,77 +591,23 @@ Widget _buildTopQuotesList(List<Map<String, dynamic>> quotes) {
 
 Widget _buildQuoteCard(BuildContext context, Map<String, String> quote) {
   String randomImage = getRandomNeutralImage(1);
-  return GestureDetector(
+  return QuoteCard(
+    quote: (quote['quote'] ?? '').toString(),
+    author: (quote['author'] ?? '').toString(),
+    backgroundImage: randomImage,
     onTap: () {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => QuoteInfoPage(  quote: {
-            ...quote,
-            'image': randomImage,
-          },
+          builder: (context) => QuoteInfoPage(
+            quote: {
+              ...quote,
+              'image': randomImage,
+            },
           ),
         ),
       );
     },
-    child: Container(
-      margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 16.0),
-      child: Card(
-        elevation: 2.0,
-        child: Column(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8.0),
-              child: Container(
-                constraints: const BoxConstraints(minHeight: 150.0), // Set minimum height
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: randomImage.startsWith('http')
-                        ? NetworkImage(randomImage) as ImageProvider<Object>
-                        : AssetImage(randomImage) as ImageProvider<Object>,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 1, sigmaY: 1),
-                  child: Container(
-                    color: Colors.black.withOpacity(0.2),
-                    child: Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Flexible(
-                              child: SingleChildScrollView(
-                                child: Text(
-                                  quote['quote'] ?? 'No quote available',
-                                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 8.0),
-                            Text(
-                              '- ${quote['author'] ?? 'Unknown Author'}',
-                              style: const TextStyle(fontSize: 14, color: Colors.grey),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            buildToolBar(),
-          ],
-        ),
-      ),
-    ),
   );
 }}
 

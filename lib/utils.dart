@@ -1,6 +1,9 @@
 // utils.dart
 import 'dart:math' as math;
+import 'package:flutter/foundation.dart';
 import 'package:new_quotes/services/local_data_service.dart';
+import 'package:new_quotes/services/purchase_service.dart';
+import 'package:new_quotes/services/premium_db_service.dart';
 import 'package:flutter/services.dart' show rootBundle, AssetManifest;
 import 'package:flutter/material.dart';
 
@@ -84,6 +87,13 @@ String cleanCapitalizeAndBreak(String s) {
 List<Map<String, dynamic>>? _quotesCache;
 List<Map<String, dynamic>>? _categoriesCache;
 
+const int freeQuotesCap = 100000;
+
+bool _premiumActive() {
+  if (kIsWeb) return false;
+  return PurchaseService.instance.premiumActive.value;
+}
+
 Future<List<Map<String, dynamic>>> _loadQuotesCached() async {
   final existing = _quotesCache;
   if (existing != null) return existing;
@@ -115,13 +125,29 @@ Future<List<Map<String, dynamic>>> _loadCategoriesCached() async {
 }
 
 Future<List<Map<String, dynamic>>> getQuotes({int limit = 50, int offset = 0}) async {
+  final premium = _premiumActive();
+  if (premium) {
+    final hasDb = await PremiumDbService.instance.hasDb();
+    if (hasDb) {
+      return PremiumDbService.instance.getQuotesPage(limit: limit, offset: offset);
+    }
+  }
+
   final mapped = await _loadQuotesCached();
-  if (offset >= mapped.length) return [];
-  final end = (offset + limit).clamp(0, mapped.length);
-  return mapped.sublist(offset, end);
+  final capped = mapped.length > freeQuotesCap ? mapped.sublist(0, freeQuotesCap) : mapped;
+  if (offset >= capped.length) return [];
+  final end = (offset + limit).clamp(0, capped.length);
+  return capped.sublist(offset, end);
 }
 
 Future<List<Map<String, dynamic>>> getCategories() async {
+  final premium = _premiumActive();
+  if (premium) {
+    final hasDb = await PremiumDbService.instance.hasDb();
+    if (hasDb) {
+      return PremiumDbService.instance.getCategories();
+    }
+  }
   return _loadCategoriesCached();
 }
 
@@ -130,8 +156,21 @@ Future<List<Map<String, dynamic>>> getCategoryQuotes(
   int limit = 50,
   int offset = 0,
 }) async {
+  final premium = _premiumActive();
+  if (premium) {
+    final hasDb = await PremiumDbService.instance.hasDb();
+    if (hasDb) {
+      return PremiumDbService.instance.getQuotesByCategory(
+        categoryId: categoryId,
+        limit: limit,
+        offset: offset,
+      );
+    }
+  }
+
   final all = await _loadQuotesCached();
-  final filtered = all.where((q) => q['category'] == categoryId).toList();
+  final capped = all.length > freeQuotesCap ? all.sublist(0, freeQuotesCap) : all;
+  final filtered = capped.where((q) => q['category'] == categoryId).toList();
   if (offset >= filtered.length) return [];
   final end = (offset + limit).clamp(0, filtered.length);
   final page = filtered.sublist(offset, end);

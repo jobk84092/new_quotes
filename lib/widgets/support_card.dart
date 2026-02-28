@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:new_quotes/services/purchase_service.dart';
+import 'package:new_quotes/services/premium_db_service.dart';
 
 class SupportCard extends StatefulWidget {
   const SupportCard({super.key});
@@ -12,6 +13,7 @@ class SupportCard extends StatefulWidget {
 class _SupportCardState extends State<SupportCard> {
   late Future<ProductDetails?> _productFuture;
   late Future<DateTime?> _untilFuture;
+  bool _downloading = false;
 
   @override
   void initState() {
@@ -75,6 +77,45 @@ class _SupportCardState extends State<SupportCard> {
                       );
                     },
                   ),
+                if (premiumActive) ...[
+                  const SizedBox(height: 10),
+                  FutureBuilder<bool>(
+                    future: PremiumDbService.instance.hasDb(),
+                    builder: (context, snapshot) {
+                      final downloaded = snapshot.data ?? false;
+                      if (downloaded) {
+                        return const Text('Premium pack downloaded.');
+                      }
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Premium pack not downloaded yet.'),
+                          const SizedBox(height: 6),
+                          ElevatedButton(
+                            onPressed: _downloading
+                                ? null
+                                : () async {
+                                    setState(() {
+                                      _downloading = true;
+                                    });
+                                    try {
+                                      await PremiumDbService.instance.downloadDb();
+                                    } catch (_) {
+                                      // ignore
+                                    } finally {
+                                      if (!mounted) return;
+                                      setState(() {
+                                        _downloading = false;
+                                      });
+                                    }
+                                  },
+                            child: const Text('Download premium pack'),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ],
               ],
             ),
           ),

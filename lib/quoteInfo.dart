@@ -1,27 +1,64 @@
 // quoteInfo.dart
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
-import 'dart:ui';
 import 'package:flutter/services.dart';
+import 'package:flutter/rendering.dart';
+import 'package:new_quotes/services/platform_media_service.dart';
+import 'package:new_quotes/widgets/quote_card.dart';
 import 'utils.dart';
 import 'package:new_quotes/widgets/ad_banner.dart';
 
-class QuoteInfoPage extends StatelessWidget {
+class QuoteInfoPage extends StatefulWidget {
   final Map<String, dynamic> quote;
 
   const QuoteInfoPage({super.key, required this.quote});
 
   @override
+  State<QuoteInfoPage> createState() => _QuoteInfoPageState();
+}
+
+class _QuoteInfoPageState extends State<QuoteInfoPage> {
+  Uint8List? _userBgBytes;
+
+  @override
   Widget build(BuildContext context) {
-    final quoteText = (quote['quote'] ?? '').toString().trim();
-    final author = (quote['author'] ?? 'Unknown').toString().trim();
+    final quoteText = (widget.quote['quote'] ?? '').toString().trim();
+    final author = (widget.quote['author'] ?? 'Unknown').toString().trim();
     final shareText = author.isEmpty || author == 'Unknown'
         ? quoteText
         : '$quoteText\n\n— $author';
+    final bg = (widget.quote['image'] ?? '').toString();
+    final repaintKey = GlobalKey();
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Quote Details'),
         actions: [
+          IconButton(
+            tooltip: 'Pick background',
+            icon: const Icon(Icons.photo_library_outlined),
+            onPressed: () async {
+              final bytes = await PlatformMediaService.pickImageBytes();
+              if (!mounted) return;
+              if (bytes == null || bytes.isEmpty) return;
+              setState(() {
+                _userBgBytes = bytes;
+              });
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Background selected')),
+              );
+            },
+          ),
+          if (_userBgBytes != null)
+            IconButton(
+              tooltip: 'Clear background',
+              icon: const Icon(Icons.close),
+              onPressed: () {
+                setState(() {
+                  _userBgBytes = null;
+                });
+              },
+            ),
           IconButton(
             tooltip: 'Copy',
             icon: const Icon(Icons.copy),
@@ -34,7 +71,7 @@ class QuoteInfoPage extends StatelessWidget {
             },
           ),
           IconButton(
-            tooltip: 'Share',
+            tooltip: 'Share text',
             icon: const Icon(Icons.share),
             onPressed: () {
               if (quoteText.isEmpty) return;
@@ -44,79 +81,55 @@ class QuoteInfoPage extends StatelessWidget {
               );
             },
           ),
+          IconButton(
+            tooltip: 'Share image',
+            icon: const Icon(Icons.image_outlined),
+            onPressed: () async {
+              if (quoteText.isEmpty) return;
+              final boundary = repaintKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
+              if (boundary == null) return;
+              final image = await boundary.toImage(pixelRatio: 3);
+              final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+              final pngBytes = byteData?.buffer.asUint8List();
+              if (pngBytes == null || pngBytes.isEmpty) return;
+              final ok = await PlatformMediaService.sharePngBytes(
+                pngBytes,
+                filename: 'quote.png',
+              );
+              if (!context.mounted) return;
+              if (!ok) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Share failed')),
+                );
+              }
+            },
+          ),
         ],
       ),
       body: Column(
         children: [
           Expanded(
-            child: _buildQuoteCard(context, quote),
-          ),
-          buildToolBar(),
-        ],
-      ),
-      bottomNavigationBar: const AdBanner(),
-    );
-  }
-
-  Widget _buildQuoteCard(BuildContext context, Map<String, dynamic> quote) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => QuoteInfoPage(quote: quote),
-          ),
-        );
-      },
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 16.0),
-        height: 250.0,
-        child: Card(
-          elevation: 2.0,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(8.0),
-            child: Container(
-             decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: quote['image'] != null && quote['image'].startsWith('http')
-                      ? NetworkImage(quote['image']) as ImageProvider<Object>
-                      : const AssetImage('assets/images/topquoteone.png') as ImageProvider<Object>,
-                  fit: BoxFit.cover,
-                ),
-              ),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 1, sigmaY: 1),
-                child: Container(
-                  color: Colors.black.withOpacity(0.2),
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            quote['quote'] ?? 'No quote available',
-                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 8.0),
-                          Text(
-                            '- ${quote['author'] ?? 'Unknown Author'}',
-                            style: const TextStyle(fontSize: 14, color: Colors.grey),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                    ),
+            child: Center(
+              child: RepaintBoundary(
+                key: repaintKey,
+                child: SizedBox(
+                  width: double.infinity,
+                  child: QuoteCard(
+                    quote: quoteText,
+                    author: author,
+                    backgroundImage: bg,
+                    backgroundBytes: _userBgBytes,
+                    onTap: null,
+                    showToolbar: false,
                   ),
                 ),
               ),
             ),
           ),
-        ),
+          buildToolBar(),
+        ],
       ),
+      bottomNavigationBar: const AdBanner(),
     );
   }
 }
