@@ -44,7 +44,7 @@ jobs:
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
           if [ -n "$ANDROID_KEYSTORE_BASE64" ]; then
-            echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > android/upload-keystore.jks
+            echo "$ANDROID_KEYSTORE_BASE64" | tr -d '\n\r ' | base64 -d > android/upload-keystore.jks
             cat > android/key.properties << EOF
           storePassword=$ANDROID_KEYSTORE_PASSWORD
           keyPassword=$ANDROID_KEY_PASSWORD
