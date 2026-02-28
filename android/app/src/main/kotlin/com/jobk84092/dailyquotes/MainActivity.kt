@@ -1,4 +1,4 @@
-package com.example.new_quotes
+package com.jobk84092.dailyquotes
 
 import android.content.Intent
 import android.database.sqlite.SQLiteDatabase

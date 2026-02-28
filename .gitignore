@@ -55,3 +55,6 @@ app.*.map.json
 
 # Local tool outputs
 /tools/out/
+
+# Keystore base64 (for copying to GitHub secret - delete after use)
+KEYSTORE_BASE64.txt
