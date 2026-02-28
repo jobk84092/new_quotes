@@ -4,7 +4,6 @@ import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
 import android.net.Uri
 import android.os.Bundle
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -17,34 +16,10 @@ class MainActivity : FlutterActivity() {
   private val channelName = "new_quotes/media"
   private val premiumChannelName = "new_quotes/premium_db"
 
+  private val requestPickImage = 9101
+
   private var pendingResult: MethodChannel.Result? = null
   private var premiumDb: SQLiteDatabase? = null
-
-  private val pickImageLauncher = registerForActivityResult(
-    ActivityResultContracts.OpenDocument()
-  ) { uri: Uri? ->
-    val result = pendingResult
-    pendingResult = null
-    if (result == null) return@registerForActivityResult
-    if (uri == null) {
-      result.success(null)
-      return@registerForActivityResult
-    }
-    try {
-      contentResolver.takePersistableUriPermission(
-        uri,
-        Intent.FLAG_GRANT_READ_URI_PERMISSION
-      )
-    } catch (_: Exception) {
-      // ignore
-    }
-    try {
-      val bytes = contentResolver.openInputStream(uri)?.use { it.readBytes() }
-      result.success(bytes)
-    } catch (e: Exception) {
-      result.error("PICK_IMAGE_FAILED", e.message, null)
-    }
-  }
 
   override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
     super.configureFlutterEngine(flutterEngine)
@@ -56,7 +31,18 @@ class MainActivity : FlutterActivity() {
             return@setMethodCallHandler
           }
           pendingResult = result
-          pickImageLauncher.launch(arrayOf("image/*"))
+          try {
+            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+              addCategory(Intent.CATEGORY_OPENABLE)
+              type = "image/*"
+              addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+              addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION)
+            }
+            startActivityForResult(intent, requestPickImage)
+          } catch (e: Exception) {
+            pendingResult = null
+            result.error("PICK_IMAGE_FAILED", e.message, null)
+          }
         }
         "shareText" -> {
           val text = (call.argument<String>("text") ?: "").trim()
@@ -137,6 +123,39 @@ class MainActivity : FlutterActivity() {
         }
         else -> result.notImplemented()
       }
+    }
+  }
+
+  override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    super.onActivityResult(requestCode, resultCode, data)
+    if (requestCode != requestPickImage) return
+
+    val result = pendingResult
+    pendingResult = null
+    if (result == null) return
+
+    if (resultCode != RESULT_OK) {
+      result.success(null)
+      return
+    }
+
+    val uri = data?.data
+    if (uri == null) {
+      result.success(null)
+      return
+    }
+
+    try {
+      contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    } catch (_: Exception) {
+      // ignore
+    }
+
+    try {
+      val bytes = contentResolver.openInputStream(uri)?.use { it.readBytes() }
+      result.success(bytes)
+    } catch (e: Exception) {
+      result.error("PICK_IMAGE_FAILED", e.message, null)
     }
   }
 
