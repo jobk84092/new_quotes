@@ -11,8 +11,9 @@ class AdBanner extends StatefulWidget {
 }
 
 class _AdBannerState extends State<AdBanner> {
+  // Replace /0000000001 with your Banner Ad Unit ID from AdMob > Apps > Ad units
   static const String _androidAdUnitId =
-      'ca-app-pub-3940256099942544/6300978111';
+      'ca-app-pub-2518115915091022/0000000001';
 
   BannerAd? _banner;
   bool _loaded = false;

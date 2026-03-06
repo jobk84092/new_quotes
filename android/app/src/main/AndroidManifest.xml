@@ -5,9 +5,10 @@
         android:label="Daily Quotes"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        <!-- Replace ~0000000001 with your App ID from AdMob > Apps > App settings -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3940256099942544~3347511713"/>
+            android:value="ca-app-pub-2518115915091022~0000000001"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"
