@@ -33,6 +33,9 @@ migrate_working_dir/
 .pub/
 /build/
 
+# Downloaded Play upload bundles (not source)
+/dist_aab/
+
 # Local content folders (not app assets)
 /SEO/
 /sketches/

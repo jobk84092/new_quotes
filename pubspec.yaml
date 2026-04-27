@@ -1,7 +1,7 @@
 name: new_quotes
 description: "Daily Quotes - Inspirational quotes for motivation, love, wisdom and more."
 publish_to: 'none'
-version: 1.0.0+1
+version: 1.0.1+2
 
 environment:
   sdk: ^3.7.2
