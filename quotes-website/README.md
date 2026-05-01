@@ -1,6 +1,6 @@
-# Daily Quotations (web)
+# Our Daily Quotes (web)
 
-A **BrainyQuote-inspired** quotes site: serif typography, topics, search, **quote of the day**, sharing to **X, Facebook, LinkedIn, WhatsApp, Reddit**, **PNG image download**, and calm **AdSense-ready** slots.
+Quotes site aligned with **`ourdailyquotes.com`** — serif typography, topics, search, quote of the day, social sharing, PNG export, AdSense-ready.
 
 ## Data pipeline
 
@@ -56,7 +56,7 @@ Put `VITE_SITE_BASE=…` in `.env.local` (see [.env.example](.env.example)) or e
 - GitHub holds your **code** and runs the **automatic build/deploy** pipeline.
 - The **`something.github.io/...`** address is only a **default**. It is not your product name unless you choose to use it.
 
-When you attach a domain you purchased (e.g. **`dailyquotations.com`**), users only see **`https://your-domain.com`** in the browser. GitHub stays in the background—you can swap hosting later (same static `dist/` folder).
+When you attach **`ourdailyquotes.com`** (usually **`www.ourdailyquotes.com`** pointing at GitHub Pages), visitors only see that URL—not `github.io`. GitHub stays in the background; you can swap host later using the same `dist/` folder.
 
 ## Own your brand: buy a domain and look professional
 

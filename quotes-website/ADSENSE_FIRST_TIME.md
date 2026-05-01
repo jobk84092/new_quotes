@@ -1,6 +1,6 @@
 # AdSense (#4) and ads.txt (#5) — first time only
 
-Use your **real public URL** everywhere below—ideally the **custom domain** you bought (e.g. `https://www.dailyquotations.com/`), not `github.io`, once DNS is live. If you only have GitHub Pages default for now (`https://jobk84092.github.io/new_quotes/`), that works temporarily if the repo is **public**. Private repo on Free tier: use Cloudflare Pages/Netlify with your purchased domain instead.
+Use your **real public URL** everywhere below—prefer **`https://www.ourdailyquotes.com/`** once DNS points at your host, not `github.io`. If you temporarily use **`https://jobk84092.github.io/new_quotes/`**, that only works while the repo is **public**. Private repo on Free tier: deploy with Cloudflare Pages/Netlify and your domain instead.
 
 ## 4) Google AdSense (apply + get IDs)
 
