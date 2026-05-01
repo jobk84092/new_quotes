@@ -1,0 +1,76 @@
+name: Deploy Daily Quotations site
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - "quotes-website/**"
+      - ".github/workflows/deploy-quotes-site.yml"
+      - "tools/quotes_csv_to_json.py"
+      - "*.csv"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python (CSV → quote shards)
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: quotes-website/package-lock.json
+
+      - name: Install and build (see also optional repo variable VITE_SITE_BASE)
+        working-directory: quotes-website
+        env:
+          VITE_ADSENSE_CLIENT: ${{ secrets.VITE_ADSENSE_CLIENT }}
+          VITE_ADSENSE_SIDEBAR: ${{ secrets.VITE_ADSENSE_SIDEBAR }}
+          VITE_ADSENSE_IN_ARTICLE: ${{ secrets.VITE_ADSENSE_IN_ARTICLE }}
+          CUSTOM_BASE: ${{ vars.VITE_SITE_BASE }}
+        shell: bash
+        run: |
+          REPO_NAME="${GITHUB_REPOSITORY##*/}"
+          if [ -z "$CUSTOM_BASE" ]; then
+            export VITE_SITE_BASE="/${REPO_NAME}/"
+            echo "Using default GitHub Pages URL base: ${VITE_SITE_BASE}"
+          else
+            export VITE_SITE_BASE="$CUSTOM_BASE"
+            echo "Using repo variable VITE_SITE_BASE: ${VITE_SITE_BASE}"
+          fi
+          echo "Live URL pattern: https://${GITHUB_REPOSITORY%%/*}.github.io/${REPO_NAME}/ (unless custom domain)"
+          npm ci
+          npm run build
+
+      - name: Write ads.txt (optional)
+        if: ${{ secrets.ADSENSE_ADS_TXT_LINE != '' }}
+        run: printf '%s\n' "${{ secrets.ADSENSE_ADS_TXT_LINE }}" > quotes-website/dist/ads.txt
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: quotes-website/dist
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

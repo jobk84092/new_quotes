@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.DS_Store
+public/data/quotes.generated.json
+# Generated on each sync / CI (~25MB+) — rebuilt from CSV in GitHub Actions
+public/data/
+.env
+.env.*
+!.env.example

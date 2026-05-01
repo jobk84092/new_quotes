@@ -1,0 +1,5 @@
+# Rename to ads.txt once you have your publisher ID from AdSense.
+# AdSense Dashboard → Sites → Ads.txt → copy lines, OR use this template:
+google.com, pub-YOUR_PUBLISHER_ID_HERE, DIRECT, f08c47fec0942fa0
+#
+# Deploy as: https://yoursite.com/ads.txt  (same host as AdSense-approved site root)
