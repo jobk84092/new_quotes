@@ -25,16 +25,32 @@ GitHub warns until DNS propagates—that’s OK.
 ## Step B — Porkbun DNS
 
 1. Porkbun → **openourquotes.com** → **DNS Records** → **Edit**.
-2. Remove **`@`** / **`www`** records that point to **placeholder / parking / old hosting** only.
-3. **Apex** (`@`) — four **A** rows:
+2. **Delete every `www` record** that is **not** the GitHub CNAME — especially Porkbun **parking** targets like **`uixie.porkbun.com`**. Leaving that in place causes GitHub **`InvalidCNAMEError`** (`www` must resolve to **`jobk84092.github.io`**, not Porkbun).
+3. **Delete incorrect apex (`@`) records** — remove **`A`** rows that are **not** GitHub’s four IPs below (temporary registrar/parking IPs will break apex + alternate-name checks).
+
+### Correct records (minimal set)
+
+**Apex** (`@` / host blank) — **exactly four** **A** records:
 
 **185.199.108.153** • **185.199.109.153** • **185.199.110.153** • **185.199.111.153**
 
-(Host is usually blank or **`@`**; see Porkbun’s UI.)
+**`www`** — **one** **CNAME** record:
 
-4. **`www`** — **CNAME** pointing to **`jobk84092.github.io`** (**no `/new_quotes`** in the hostname).
+| Type | Host | Answer / points to |
+|------|------|-------------------|
+| CNAME | **`www`** | **`jobk84092.github.io`** |
 
-(Optional: add GitHub **AAAA** records from [Managing a custom domain](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site#configuring-an-apex-domain) if you want IPv6.)
+Rules GitHub cares about:
+
+- **No `https://`**, **no trailing slash**, **no path** — only the hostname **`jobk84092.github.io`**.
+- **Do not** CNAME **`www`** to **`username.github.io/new_quotes`** (invalid).
+- **`www`** should **not** also have **A** records; use **CNAME** only for `www`.
+
+(Optional: GitHub **AAAA** for apex — [Managing a custom domain](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site#configuring-an-apex-domain).)
+
+### If GitHub shows `InvalidCNAMEError`
+
+Public DNS currently returned **`www`** → **`uixie.porkbun.com`** instead of **`jobk84092.github.io`**. Fix: remove that CNAME, add **`www` → `jobk84092.github.io`**, wait a few minutes, click **Verify** again in GitHub Pages. Recheck locally: `dig +short www.openourquotes.com CNAME` should eventually show **`jobk84092.github.io.`**.
 
 ---
 
