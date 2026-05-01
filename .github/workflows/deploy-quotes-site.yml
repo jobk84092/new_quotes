@@ -64,8 +64,14 @@ jobs:
           npm run build
 
       - name: Write ads.txt (optional)
-        if: ${{ secrets.ADSENSE_ADS_TXT_LINE != '' }}
-        run: printf '%s\n' "${{ secrets.ADSENSE_ADS_TXT_LINE }}" > quotes-website/dist/ads.txt
+        env:
+          ADSENSE_ADS_TXT_LINE: ${{ secrets.ADSENSE_ADS_TXT_LINE }}
+        run: |
+          if [ -z "${ADSENSE_ADS_TXT_LINE}" ]; then
+            echo "No ADSENSE_ADS_TXT_LINE secret; skipping ads.txt"
+          else
+            printf '%s\n' "${ADSENSE_ADS_TXT_LINE}" > quotes-website/dist/ads.txt
+          fi
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
