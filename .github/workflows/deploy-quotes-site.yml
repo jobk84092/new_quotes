@@ -1,4 +1,4 @@
-name: Deploy Daily Quotations site
+name: Deploy Open Our Quotes site
 
 on:
   push:
@@ -59,6 +59,7 @@ jobs:
             echo "Using repo variable VITE_SITE_BASE: ${VITE_SITE_BASE}"
           fi
           echo "Live URL pattern: https://${GITHUB_REPOSITORY%%/*}.github.io/${REPO_NAME}/ (unless custom domain)"
+          echo "NOTE: For openourquotes.com set Actions variable VITE_SITE_BASE=/ — see quotes-website/OPENOURQUOTES_GITHUB_PAGES.md"
           npm ci
           npm run build
 

@@ -1,6 +1,6 @@
-# Our Daily Quotes (web)
+# Open Our Quotes (web)
 
-Quotes site aligned with **`ourdailyquotes.com`** — serif typography, topics, search, quote of the day, social sharing, PNG export, AdSense-ready.
+Production domain: **`openourquotes.com`** (`www` recommended for primary URL). Full **Porkbun + GitHub Pages** checklist: **[OPENOURQUOTES_GITHUB_PAGES.md](OPENOURQUOTES_GITHUB_PAGES.md)**.
 
 ## Data pipeline
 
@@ -56,30 +56,30 @@ Put `VITE_SITE_BASE=…` in `.env.local` (see [.env.example](.env.example)) or e
 - GitHub holds your **code** and runs the **automatic build/deploy** pipeline.
 - The **`something.github.io/...`** address is only a **default**. It is not your product name unless you choose to use it.
 
-When you attach **`ourdailyquotes.com`** (usually **`www.ourdailyquotes.com`** pointing at GitHub Pages), visitors only see that URL—not `github.io`. GitHub stays in the background; you can swap host later using the same `dist/` folder.
+With **`openourquotes.com`** on GitHub Pages, visitors hit your brand URL only; **`github.io`** stays behind the curtain.
 
 ## Own your brand: buy a domain and look professional
 
 1. **Pick and buy** a domain at any registrar (**Cloudflare**, **Porkbun**, **Namecheap**, Squarespace/Google-style registrars, etc.). Prefer **easy renewal pricing** over a cheap year-one promo. Short beats clever: **`.com`** / **`.co`** still feel most mainstream for this kind of site.
 
-2. **Attach the domain** in the repo (**Settings → Pages → Custom domain**). Enter **`www.example.com`** (often easiest first) **or** the apex (**`example.com`**). Follow GitHub’s **DNS checklist** shown there (**CNAME** to **`YOURUSER.github.io`** or apex **A** records—they print the IPs).
+2. Add **`www.openourquotes.com`** (or apex **`openourquotes.com`**) under **Pages → Custom domain**. Point DNS at Porkbun per **[OPENOURQUOTES_GITHUB_PAGES.md](OPENOURQUOTES_GITHUB_PAGES.md)**.
 
 3. Wait for DNS and HTTPS (GitHub issues a **free certificate**).
 
 4. **Important:** Tell the site build to serve from **`/`**, not **`/new_quotes/`**:
    - **Settings → Secrets and variables → Actions → Variables**.
    - New variable **`VITE_SITE_BASE`** = **`/`**.
-   - Re-run workflow **Deploy Daily Quotations site** (or push a tiny commit).
+   - Re-run workflow **Deploy Open Our Quotes site** (or push a tiny commit).
 
-5. Put that **exact same URL** in **AdSense** (and **`ADSENSE_FIRST_TIME.md`**) everywhere you claim your website.
+5. Put **`https://www.openourquotes.com/`** everywhere in **Google AdSense** (see **[ADSENSE_FIRST_TIME.md](ADSENSE_FIRST_TIME.md)**).
 
 Same **static folder** (`quotes-website/dist`) can ship from **Cloudflare Pages** or **Netlify** if you prefer—they’re equally professional; DNS just points elsewhere.
 
 ## Ship today — GitHub Pages + AdSense
 
-1. Push to `main`; workflow **Deploy Daily Quotations site** runs automatically, or open **Actions → Run workflow**.
+1. Push to `main`; workflow **Deploy Open Our Quotes site** runs (or **Actions → Run workflow**).
 2. Repo **Settings → Pages → Build and deployment:** set source to **GitHub Actions** once.
-3. Visit your live URL: `https://<you>.github.io/<repo>/` (example: **`https://jobk84092.github.io/new_quotes/`**). Check Privacy: **`https://jobk84092.github.io/new_quotes/privacy.html`**.
+3. After **`VITE_SITE_BASE=/`** + DNS propagation, verify **`https://www.openourquotes.com/`** and **`privacy.html`**. Fallback before DNS: **`https://jobk84092.github.io/new_quotes/`** (only if repo is **public** and `VITE_SITE_BASE` unset for subpath builds).
 
 **Private repo:** On the GitHub Free plan, **Pages is not enabled for private repositories.** Make this repo **public** (repo **Settings → General → Danger zone**) **or** host `quotes-website/dist` elsewhere (Cloudflare Pages, Netlify, etc.)—same assets, drag-and-drop **`dist`** works.
 

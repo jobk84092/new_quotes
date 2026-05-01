@@ -1,6 +1,6 @@
 # AdSense (#4) and ads.txt (#5) — first time only
 
-Use your **real public URL** everywhere below—prefer **`https://www.ourdailyquotes.com/`** once DNS points at your host, not `github.io`. If you temporarily use **`https://jobk84092.github.io/new_quotes/`**, that only works while the repo is **public**. Private repo on Free tier: deploy with Cloudflare Pages/Netlify and your domain instead.
+Use your **real public URL** everywhere below — prefer **`https://www.openourquotes.com/`** once DNS + SSL are live, not `github.io`. If you temporarily use **`https://jobk84092.github.io/new_quotes/`**, that only works while the repo is **public** and **`VITE_SITE_BASE`** is set for **subpath** deployment (not **`/`**). Private repo on Free tier: make repo **public** or use Cloudflare Pages/Netlify.
 
 ## 4) Google AdSense (apply + get IDs)
 
@@ -24,13 +24,13 @@ Repo: **Settings → Secrets and variables → Actions → New repository secret
 | `VITE_ADSENSE_SIDEBAR` | Sidebar slot id |
 | `VITE_ADSENSE_IN_ARTICLE` | In-feed / fluid slot id |
 
-Then **Actions** → workflow **Deploy Daily Quotations site** → **Run workflow** (or push any change).
+Then **Actions** → workflow **Deploy Open Our Quotes site** → **Run workflow** (or push any change).
 
 ## 5) ads.txt
 
 1. In AdSense, open **Sites** (or Ads.txt section) → copy the line that starts with **`google.com, pub-…`** (`DIRECT, f08…` at the end).
 2. Repo **Settings → Secrets → Actions → New secret** → name **`ADSENSE_ADS_TXT_LINE`** → paste that **whole line**.
-3. Re-run **Deploy Daily Quotations site**.
+3. Re-run **Deploy Open Our Quotes site**.
 
 The deployment workflow writes `ads.txt` to your live site automatically when that secret exists.
 

@@ -193,7 +193,7 @@ function renderShell(root, inner) {
     <header class="site-header">
       <div class="header-inner">
         <div class="brand">
-          <a href="#/"><span class="brand-tag">Inspiration</span>Our Daily Quotes</a>
+          <a href="#/"><span class="brand-tag">Inspiration</span>Open Our Quotes</a>
         </div>
         <nav class="nav-main" aria-label="Main">
           <a href="#/">Today</a>
@@ -478,7 +478,7 @@ async function downloadQuotePng(text, author) {
 
   ctx.font = '600 22px "Source Sans 3", system-ui, sans-serif';
   ctx.fillStyle = "rgba(250,249,246,0.45)";
-  ctx.fillText("Our Daily Quotes", w / 2, w - 72);
+  ctx.fillText("Open Our Quotes", w / 2, w - 72);
 
   const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
   const a = document.createElement("a");
