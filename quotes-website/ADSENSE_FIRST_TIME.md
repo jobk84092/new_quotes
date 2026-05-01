@@ -1,6 +1,6 @@
 # AdSense (#4) and ads.txt (#5) — first time only
 
-Your site URL (after Pages works) is **`https://jobk84092.github.io/new_quotes/`** — only if **`new_quotes` is public** on GitHub Free. If your repo stays private, use Cloudflare Pages/Netlify and replace this URL wherever it appears below.
+Use your **real public URL** everywhere below—ideally the **custom domain** you bought (e.g. `https://www.dailyquotations.com/`), not `github.io`, once DNS is live. If you only have GitHub Pages default for now (`https://jobk84092.github.io/new_quotes/`), that works temporarily if the repo is **public**. Private repo on Free tier: use Cloudflare Pages/Netlify with your purchased domain instead.
 
 ## 4) Google AdSense (apply + get IDs)
 

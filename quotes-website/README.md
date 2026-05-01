@@ -49,6 +49,32 @@ Static output is in `dist/`.
 
 Put `VITE_SITE_BASE=…` in `.env.local` (see [.env.example](.env.example)) or export it before `npm run build`.
 
+## What is “the GitHub thing”?
+
+**Visitors don’t have to care about GitHub.**
+
+- GitHub holds your **code** and runs the **automatic build/deploy** pipeline.
+- The **`something.github.io/...`** address is only a **default**. It is not your product name unless you choose to use it.
+
+When you attach a domain you purchased (e.g. **`dailyquotations.com`**), users only see **`https://your-domain.com`** in the browser. GitHub stays in the background—you can swap hosting later (same static `dist/` folder).
+
+## Own your brand: buy a domain and look professional
+
+1. **Pick and buy** a domain at any registrar (**Cloudflare**, **Porkbun**, **Namecheap**, Squarespace/Google-style registrars, etc.). Prefer **easy renewal pricing** over a cheap year-one promo. Short beats clever: **`.com`** / **`.co`** still feel most mainstream for this kind of site.
+
+2. **Attach the domain** in the repo (**Settings → Pages → Custom domain**). Enter **`www.example.com`** (often easiest first) **or** the apex (**`example.com`**). Follow GitHub’s **DNS checklist** shown there (**CNAME** to **`YOURUSER.github.io`** or apex **A** records—they print the IPs).
+
+3. Wait for DNS and HTTPS (GitHub issues a **free certificate**).
+
+4. **Important:** Tell the site build to serve from **`/`**, not **`/new_quotes/`**:
+   - **Settings → Secrets and variables → Actions → Variables**.
+   - New variable **`VITE_SITE_BASE`** = **`/`**.
+   - Re-run workflow **Deploy Daily Quotations site** (or push a tiny commit).
+
+5. Put that **exact same URL** in **AdSense** (and **`ADSENSE_FIRST_TIME.md`**) everywhere you claim your website.
+
+Same **static folder** (`quotes-website/dist`) can ship from **Cloudflare Pages** or **Netlify** if you prefer—they’re equally professional; DNS just points elsewhere.
+
 ## Ship today — GitHub Pages + AdSense
 
 1. Push to `main`; workflow **Deploy Daily Quotations site** runs automatically, or open **Actions → Run workflow**.
@@ -58,8 +84,6 @@ Put `VITE_SITE_BASE=…` in `.env.local` (see [.env.example](.env.example)) or e
 **Private repo:** On the GitHub Free plan, **Pages is not enabled for private repositories.** Make this repo **public** (repo **Settings → General → Danger zone**) **or** host `quotes-website/dist` elsewhere (Cloudflare Pages, Netlify, etc.)—same assets, drag-and-drop **`dist`** works.
 
 **AdSense (`ads.txt`, secrets, review):** step-by-step checklist with screenshots-style instructions is in **[ADSENSE_FIRST_TIME.md](ADSENSE_FIRST_TIME.md)** (includes optional secret **`ADSENSE_ADS_TXT_LINE`** instead of committing `ads.txt` by hand).
-
-(Optional) Repo **variable `VITE_SITE_BASE`** overrides the deploy base—for example **`/`** if Pages uses a custom apex domain.
 
 ## Monetization (Google AdSense)
 
