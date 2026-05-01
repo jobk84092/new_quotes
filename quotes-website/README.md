@@ -53,7 +53,9 @@ Put `VITE_SITE_BASE=…` in `.env.local` (see [.env.example](.env.example)) or e
 
 1. Push to `main`; workflow **Deploy Daily Quotations site** runs automatically, or open **Actions → Run workflow**.
 2. Repo **Settings → Pages → Build and deployment:** set source to **GitHub Actions** once.
-3. Visit your live URL: `https://<you>.github.io/<repo>/` (use your GitHub username + repo name). Check **Privacy**: `https://<you>.github.io/<repo>/privacy.html`.
+3. Visit your live URL: `https://<you>.github.io/<repo>/` (example: **`https://jobk84092.github.io/new_quotes/`**). Check Privacy: **`https://jobk84092.github.io/new_quotes/privacy.html`**.
+
+**Private repo:** On the GitHub Free plan, **Pages is not enabled for private repositories.** Make this repo **public** (repo **Settings → General → Danger zone**) **or** host `quotes-website/dist` elsewhere (Cloudflare Pages, Netlify, etc.)—same assets, drag-and-drop **`dist`** works.
 
 **AdSense (`ads.txt`, secrets, review):** step-by-step checklist with screenshots-style instructions is in **[ADSENSE_FIRST_TIME.md](ADSENSE_FIRST_TIME.md)** (includes optional secret **`ADSENSE_ADS_TXT_LINE`** instead of committing `ads.txt` by hand).
 
