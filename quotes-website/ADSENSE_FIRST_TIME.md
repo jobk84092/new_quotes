@@ -1,6 +1,6 @@
 # AdSense (#4) and ads.txt (#5) — first time only
 
-Your site URL looks like **`https://<your-username>.github.io/new_quotes/`** (replace `<your-username>` with your GitHub account name).
+Your site URL (after Pages works) is **`https://jobk84092.github.io/new_quotes/`** — only if **`new_quotes` is public** on GitHub Free. If your repo stays private, use Cloudflare Pages/Netlify and replace this URL wherever it appears below.
 
 ## 4) Google AdSense (apply + get IDs)
 
