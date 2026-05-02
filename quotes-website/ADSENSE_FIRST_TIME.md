@@ -1,37 +1,101 @@
-# AdSense (#4) and ads.txt (#5) — first time only
+# Google AdSense + ads.txt — checklist for Open Our Quotes
 
-Use your **real public URL** everywhere below — prefer **`https://www.openourquotes.com/`** once DNS + SSL are live, not `github.io`. If you temporarily use **`https://jobk84092.github.io/new_quotes/`**, that only works while the repo is **public** and **`VITE_SITE_BASE`** is set for **subpath** deployment (not **`/`**). Private repo on Free tier: make repo **public** or use Cloudflare Pages/Netlify.
+**Live site:** `https://www.openourquotes.com/`  
+**Privacy:** `https://www.openourquotes.com/privacy.html`
 
-## 4) Google AdSense (apply + get IDs)
+---
 
-You need a Google account (often the same Gmail you use for developer tools).
+## Before you apply
 
-1. Open **[google.com/adsense](https://www.google.com/adsense/)** → **Start** / Sign in.
-2. When asked for your **website URL**, paste **exactly** what you publish (same as your live Pages URL above), include `https://`.
-3. Google may ask you to verify ownership—GitHub-hosted sites often verify via an **HTML meta tag**: AdSense gives you a tag → add it temporarily to **`quotes-website/index.html`** inside `<head>`, push to redeploy → click verify in AdSense.
-4. **Wait for review** — can be days. You cannot skip this gate.
-5. After approval, **create two ad units** in AdSense (under **Ads** / **Sites** — UI changes regularly):
-   - One **responsive display**-style unit (sidebar/desktop) → copy the **ad unit / slot ID** (numbers).
-   - One **in-feed**, **fluid**, or **multiplex**-style unit (between content rows) → copy that slot ID.
+1. **HTTPS** — Browser address bar should show a **normal secure lock** for `www.openourquotes.com` (no certificate warnings). If Chrome still says **Not Secure**, finish TLS first (**Pages → Custom domain / Enforce HTTPS**) or AdSense may reject the site.
+2. **Repo public** — GitHub Free needs a **public** repo for Pages from Actions (or upgrade plan).
+3. **Original content + policy** — You already ship real quotes + **privacy.html**; keep both reachable.
 
-### Put IDs into GitHub Actions secrets
+---
 
-Repo: **Settings → Secrets and variables → Actions → New repository secret**:
+## Step A — Apply to AdSense
 
-| Name | Value |
-|------|--------|
-| `VITE_ADSENSE_CLIENT` | `ca-pub-…………` |
-| `VITE_ADSENSE_SIDEBAR` | Sidebar slot id |
-| `VITE_ADSENSE_IN_ARTICLE` | In-feed / fluid slot id |
+1. Go to **[Google AdSense](https://www.google.com/adsense/)** → sign in → **Get started**.
+2. **Site URL:** `https://www.openourquotes.com/` (include `https://`, trailing slash optional).
+3. **Verify ownership** when prompted — common option is **meta tag**:
+   - Copy the tag Google gives you.
+   - Paste it in **`quotes-website/index.html`** inside `<head>` (there is an HTML comment marking the spot).
+   - Commit, push (or **Actions → Deploy Open Our Quotes site → Run workflow**).
+   - Click **Verify** in AdSense.
 
-Then **Actions** → workflow **Deploy Open Our Quotes site** → **Run workflow** (or push any change).
+Alternative verification: **DNS TXT** at Porkbun (Google shows instructions).
 
-## 5) ads.txt
+4. **Review** — Often **several days**. You cannot skip review.
 
-1. In AdSense, open **Sites** (or Ads.txt section) → copy the line that starts with **`google.com, pub-…`** (`DIRECT, f08…` at the end).
-2. Repo **Settings → Secrets → Actions → New secret** → name **`ADSENSE_ADS_TXT_LINE`** → paste that **whole line**.
-3. Re-run **Deploy Open Our Quotes site**.
+---
 
-The deployment workflow writes `ads.txt` to your live site automatically when that secret exists.
+## Step B — After approval: create ad units + wire secrets
 
-Do not click your own ads.
+Google’s UI moves around; you want **two units** that match how the app is coded:
+
+| Placement | Suggested AdSense type | Maps to secret |
+|-----------|------------------------|----------------|
+| Sidebar | Responsive display | `VITE_ADSENSE_SIDEBAR` |
+| Between content rows | In-feed / fluid / multiplex (responsive between items) | `VITE_ADSENSE_IN_ARTICLE` |
+
+From each unit, note:
+
+- **Publisher ID** — looks like `ca-pub-xxxxxxxxxxxxxxxx`
+- **Slot / ad unit ID** — numeric **slot** id per unit
+
+---
+
+## Step C — GitHub Actions secrets (required for live ads)
+
+**Repo → Settings → Secrets and variables → Actions → Secrets → New repository secret**
+
+| Secret name | Value |
+|-------------|--------|
+| `VITE_ADSENSE_CLIENT` | Full publisher id, e.g. `ca-pub-xxxxxxxxxxxxxxxx` |
+| `VITE_ADSENSE_SIDEBAR` | Sidebar unit **slot** id (numbers only is fine if that’s what AdSense shows) |
+| `VITE_ADSENSE_IN_ARTICLE` | In-article / fluid unit **slot** id |
+
+Then **Actions → Deploy Open Our Quotes site → Run workflow**.
+
+Secrets are injected at **build** time (`npm run build`). Changing secrets **without** redeploy does not update the live bundle.
+
+---
+
+## Step D — ads.txt (strongly recommended)
+
+1. In AdSense, find the **`ads.txt`** line for your publisher (starts with `google.com, pub-…`).
+2. **Settings → Secrets → Actions → New secret**
+   - Name: **`ADSENSE_ADS_TXT_LINE`**
+   - Value: **paste the entire line** (single line, same as AdSense shows).
+3. **Run workflow** again.
+
+The deploy writes **`ads.txt`** into **`dist/`**, so it is served at:
+
+**`https://www.openourquotes.com/ads.txt`**
+
+---
+
+## Step E — Confirm it worked
+
+- Visit the site — sidebar / in-feed areas show **real ads** (or empty/ad placeholders until inventory fills).
+- **`https://www.openourquotes.com/ads.txt`** returns **200** with your line.
+
+---
+
+## Policies & realism
+
+- **Do not click your own ads** or ask others to click — policy violations risk permanent bans.
+- **RPM** starts low until traffic grows; search/social help more than tweaking placement endlessly.
+- **EU / UK visitors:** Google may later prompt for **consent mode / CMP** for ads personalization — follow AdSense notices when they appear.
+
+---
+
+## Troubleshooting
+
+| Issue | What to check |
+|-------|----------------|
+| Build succeeds but no ads | Secrets missing or typo in secret **names** (must match exactly). Redeploy after adding secrets. |
+| Blank boxes | Ad blockers; wait for review completion; some regions have lower fill. |
+| ads.txt “Not found” | `ADSENSE_ADS_TXT_LINE` secret unset or workflow not rerun; confirm file **after** deploy at `/ads.txt`. |
+
+For DNS/Pages/HTTPS, see **[OPENOURQUOTES_GITHUB_PAGES.md](OPENOURQUOTES_GITHUB_PAGES.md)**.
