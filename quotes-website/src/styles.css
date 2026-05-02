@@ -181,6 +181,26 @@ main.main-col {
   align-items: center;
 }
 
+.download-image-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  width: 100%;
+  margin-top: 0.15rem;
+}
+
+.download-image-group .btn {
+  font-size: 0.78rem;
+  padding: 0.4rem 0.65rem;
+}
+
+@media (max-width: 640px) {
+  .download-image-group .btn {
+    font-size: 0.72rem;
+    padding: 0.38rem 0.55rem;
+  }
+}
+
 .btn {
   display: inline-flex;
   align-items: center;
@@ -228,11 +248,48 @@ main.main-col {
   background: var(--surface);
 }
 
+/* --- home: topics first --- */
+
+.home-topics-panel {
+  margin-bottom: 1.75rem;
+  padding: 1.35rem 1.25rem 1.55rem;
+  background: linear-gradient(165deg, rgba(15, 107, 92, 0.09) 0%, rgba(255, 255, 255, 0.96) 48%, var(--surface) 100%);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) + 2px);
+  box-shadow: var(--shadow);
+  border-left: 4px solid var(--accent);
+}
+
+.home-topics-panel__head {
+  margin-bottom: 1.1rem;
+}
+
+.home-topics-panel__title {
+  font-family: var(--quote-serif);
+  font-size: clamp(1.5rem, 4vw, 1.85rem);
+  font-weight: 600;
+  margin: 0 0 0.35rem;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+}
+
+.home-topics-panel__sub {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
 .topic-chips {
   display: flex;
   flex-wrap: wrap;
   gap: 0.45rem;
   margin-bottom: 1rem;
+}
+
+.topic-chips--prominent {
+  gap: 0.55rem 0.65rem;
+  margin-bottom: 0;
 }
 
 .chip {
@@ -243,6 +300,39 @@ main.main-col {
   border: 1px solid var(--border);
   font-size: 0.85rem;
   font-weight: 500;
+}
+
+.chip--prominent {
+  padding: 0.45rem 1rem;
+  font-size: 0.98rem;
+  font-weight: 600;
+  border-color: rgba(15, 107, 92, 0.35);
+  background: var(--surface);
+  box-shadow: 0 1px 2px rgba(30, 57, 50, 0.06);
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s,
+    transform 0.12s;
+}
+
+.chip--prominent:hover {
+  border-color: var(--accent);
+  box-shadow: 0 4px 14px rgba(15, 107, 92, 0.12);
+  transform: translateY(-1px);
+}
+
+.chip--prominent .chip-count {
+  display: inline-block;
+  margin-left: 0.25rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--accent);
+  opacity: 0.9;
+}
+
+.chip--all {
+  border-style: dashed;
+  background: rgba(15, 107, 92, 0.06);
 }
 
 .chip a {

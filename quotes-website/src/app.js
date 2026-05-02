@@ -291,25 +291,27 @@ async function renderHome(main, side) {
   side.innerHTML = sidebarAdMarkup();
   const quote = await loadQotd();
   main.innerHTML = `
-    <article class="hero" aria-labelledby="qotd-title">
+    <section class="home-topics-panel" aria-labelledby="home-topics-heading">
+      <div class="home-topics-panel__head">
+        <h2 class="home-topics-panel__title" id="home-topics-heading">Browse by topic</h2>
+        <p class="home-topics-panel__sub">Jump into a theme — love, wisdom, nature, and more.</p>
+      </div>
+      <div class="topic-chips topic-chips--prominent">
+        ${categories
+          .slice(0, 18)
+          .map(
+            (c) =>
+              `<span class="chip chip--prominent"><a href="#/topic/${encodeURIComponent(c.id)}">${escapeHtml(c.label)} <span class="chip-count">${c.count}</span></a></span>`
+          )
+          .join("")}
+        <span class="chip chip--prominent chip--all"><a href="#/topics">All topics →</a></span>
+      </div>
+    </section>
+    <article class="hero hero--qotd" aria-labelledby="qotd-title">
       <p class="hero-label" id="qotd-title">Quote of the day</p>
       ${quote ? quoteBlockLarge(quote) : "<p>No quotes.</p>"}
     </article>
-    <div class="ad-wrap ad-in-article" data-ad-inarticle="1"></div>
-    <section style="margin-top:2rem;">
-      <h2 class="section-title">Topics</h2>
-      <p style="color:var(--muted);margin:0 0 1rem;">Read quotations by topic · Share to socials · Save as an image.</p>
-      <div class="topic-chips">
-        ${categories
-          .slice(0, 16)
-          .map(
-            (c) =>
-              `<span class="chip"><a href="#/topic/${encodeURIComponent(c.id)}">${escapeHtml(c.label)} <small>(${c.count})</small></a></span>`
-          )
-          .join("")}
-        <span class="chip"><a href="#/topics">All topics »</a></span>
-      </div>
-    </section>`;
+    <div class="ad-wrap ad-in-article" data-ad-inarticle="1"></div>`;
   bindQuoteActions(main);
 }
 
@@ -445,7 +447,11 @@ function toolRow(q) {
       <button type="button" class="btn icon-btn" data-share="wa">WhatsApp</button>
       <button type="button" class="btn icon-btn" data-share="reddit">Reddit</button>
       <button type="button" class="btn icon-btn" data-share="copy">Copy link</button>
-      <button type="button" class="btn btn-accent" data-action="download-image">Download image</button>
+      <span class="download-image-group" role="group" aria-label="Download quote as image">
+        <button type="button" class="btn btn-accent" data-action="download-image" data-format="og">Facebook / X · 1200×630</button>
+        <button type="button" class="btn" data-action="download-image" data-format="igSquare">Instagram · 1080×1080</button>
+        <button type="button" class="btn" data-action="download-image" data-format="igPortrait">Instagram · 1080×1350</button>
+      </span>
       <input type="hidden" data-field="text" value="${escapeAttr(q.text)}" />
       <input type="hidden" data-field="author" value="${escapeAttr(q.author)}" />
       <input type="hidden" data-field="url" value="${escapeAttr(url)}" />
@@ -466,7 +472,11 @@ function bindQuoteActions(scope) {
     });
     row.querySelectorAll('[data-action="download-image"]').forEach((btn) => {
       btn.addEventListener("click", () =>
-        downloadQuotePng(row.querySelector('[data-field="text"]').value, row.querySelector('[data-field="author"]').value)
+        downloadQuotePng(
+          row.querySelector('[data-field="text"]').value,
+          row.querySelector('[data-field="author"]').value,
+          btn.getAttribute("data-format") || "og"
+        )
       );
     });
   });
@@ -475,7 +485,7 @@ function bindQuoteActions(scope) {
       ev.preventDefault();
       const id = parseInt(lnk.getAttribute("data-dl"), 10);
       const qi = await getQuoteById(id);
-      if (qi) await downloadQuotePng(qi.text, qi.author);
+      if (qi) await downloadQuotePng(qi.text, qi.author, "og");
     });
   });
 }
@@ -504,53 +514,92 @@ function openShare(kind, text, author, url) {
   if (target) window.open(target, "_blank", "noopener,noreferrer,width=600,height=520");
 }
 
-async function downloadQuotePng(text, author) {
-  await document.fonts?.load?.('italic 52px "Cormorant Garamond"', '“Sample”').catch(() => {});
+/** Facebook / LinkedIn OG, X summary card · IG square · IG 4:5 portrait */
+const IMAGE_PRESETS = {
+  og: { w: 1200, h: 630, slug: "facebook-x-1200x630" },
+  igSquare: { w: 1080, h: 1080, slug: "instagram-square-1080" },
+  igPortrait: { w: 1080, h: 1350, slug: "instagram-portrait-1080x1350" },
+};
+
+async function downloadQuotePng(text, author, format = "og") {
+  const preset = IMAGE_PRESETS[format] || IMAGE_PRESETS.og;
+  await document.fonts?.load?.('italic 52px "Cormorant Garamond"', '"Aa"').catch(() => {});
 
   const canvas = document.createElement("canvas");
-  const w = 1080;
-  canvas.width = w;
-  canvas.height = w;
+  canvas.width = preset.w;
+  canvas.height = preset.h;
   const ctx = canvas.getContext("2d");
+  paintQuoteGraphic(ctx, preset.w, preset.h, text, author);
 
-  const g = ctx.createLinearGradient(0, 0, w, w);
-  g.addColorStop(0, "#1e3932");
-  g.addColorStop(1, "#0f6b5c");
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, w, w);
-
-  ctx.fillStyle = "rgba(255,255,255,0.12)";
-  ctx.font = "italic 420px Cormorant Garamond, Georgia, serif";
-  ctx.fillText("“", 60, 320);
-
-  ctx.fillStyle = "#faf9f6";
-  ctx.textAlign = "center";
-
-  const maxW = w - 160;
-  const quoteSize = text.length > 280 ? 38 : text.length > 180 ? 44 : 52;
-  ctx.font = `italic ${quoteSize}px Cormorant Garamond, Georgia, serif`;
-  let y = 280;
-  const lh = quoteSize * 1.35;
-  y = drawWrappedText(ctx, text, w / 2, y, maxW, lh, quoteSize);
-
-  ctx.font = `500 32px "Source Sans 3", system-ui, sans-serif`;
-  ctx.fillStyle = "rgba(250,249,246,0.85)";
-  ctx.fillText(`— ${author}`, w / 2, Math.min(y + 60, w - 120));
-
-  ctx.font = '600 22px "Source Sans 3", system-ui, sans-serif';
-  ctx.fillStyle = "rgba(250,249,246,0.45)";
-  ctx.fillText("Open Our Quotes", w / 2, w - 72);
-
-  const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
+  const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/png", 0.92));
   const a = document.createElement("a");
   const safeAuthor = author.replace(/[^\w\s-]/g, "").slice(0, 24).replace(/\s+/g, "-").toLowerCase();
-  a.download = `quote-${safeAuthor || "daily"}.png`;
+  a.download = `openourquotes-${preset.slug}-${safeAuthor || "quote"}.png`;
   a.href = URL.createObjectURL(blob);
   a.click();
   URL.revokeObjectURL(a.href);
 }
 
-function drawWrappedText(ctx, text, cx, startY, maxWidth, lineHeight, fontPx) {
+function paintQuoteGraphic(ctx, w, h, text, author) {
+  const lg = ctx.createLinearGradient(0, 0, w, h * 1.05);
+  lg.addColorStop(0, "#132822");
+  lg.addColorStop(0.5, "#1a332d");
+  lg.addColorStop(1, "#0c221c");
+  ctx.fillStyle = lg;
+  ctx.fillRect(0, 0, w, h);
+
+  const vignette = ctx.createRadialGradient(w * 0.5, h * 0.35, 0, w * 0.5, h * 0.4, Math.max(w, h) * 0.85);
+  vignette.addColorStop(0, "rgba(255,255,255,0.09)");
+  vignette.addColorStop(0.55, "rgba(255,255,255,0.02)");
+  vignette.addColorStop(1, "rgba(0,0,0,0.22)");
+  ctx.fillStyle = vignette;
+  ctx.fillRect(0, 0, w, h);
+
+  const inset = Math.round(Math.min(w, h) * 0.045);
+  ctx.strokeStyle = "rgba(214, 176, 96, 0.42)";
+  ctx.lineWidth = Math.max(1, Math.round(Math.min(w, h) / 420));
+  ctx.strokeRect(inset + 0.5, inset + 0.5, w - inset * 2 - 1, h - inset * 2 - 1);
+
+  const deco = Math.min(w, h) * 0.14;
+  ctx.fillStyle = "rgba(255,255,255,0.07)";
+  ctx.font = `italic ${deco}px Cormorant Garamond, Georgia, serif`;
+  ctx.textAlign = "left";
+  ctx.fillText("\u201c", inset * 1.05, inset + deco * 0.92);
+
+  let quotePx = Math.round(52 * (Math.min(w, h) / 1080));
+  if (h <= 680) quotePx = Math.min(quotePx, 34);
+  if (text.length > 180) quotePx = Math.round(quotePx * 0.92);
+  if (text.length > 300) quotePx = Math.round(quotePx * 0.88);
+  if (text.length > 420) quotePx = Math.round(quotePx * 0.82);
+  quotePx = Math.max(22, Math.min(56, quotePx));
+
+  const padX = Math.round(w * 0.085);
+  const maxW = w - padX * 2;
+  const lh = quotePx * 1.36;
+  const startY = Math.round(h * (h > w * 1.1 ? 0.26 : h < 700 ? 0.29 : 0.34));
+
+  ctx.fillStyle = "#faf9f6";
+  ctx.textAlign = "center";
+  ctx.font = `italic ${quotePx}px Cormorant Garamond, Georgia, serif`;
+  const bodyBottom = drawWrappedText(ctx, text, w / 2, startY, maxW, lh);
+
+  const authorSize = Math.round(quotePx * 0.52);
+  const padBottom = Math.round(Math.min(w, h) * 0.07);
+  let authorY = bodyBottom + quotePx * 0.65;
+  authorY = Math.min(authorY, h - padBottom - authorSize * 2.4);
+
+  ctx.font = `600 ${authorSize}px "Source Sans 3", system-ui, sans-serif`;
+  ctx.fillStyle = "rgba(250,249,246,0.9)";
+  ctx.fillText(`\u2014 ${author}`, w / 2, authorY);
+
+  const brand = Math.round(quotePx * 0.36);
+  ctx.font = `600 ${brand}px "Source Sans 3", system-ui, sans-serif`;
+  ctx.fillStyle = "rgba(250,249,246,0.4)";
+  ctx.fillText("Open Our Quotes", w / 2, h - padBottom);
+}
+
+/** Returns y position just below the last line of text. */
+function drawWrappedText(ctx, text, cx, startY, maxWidth, lineHeight) {
   const words = text.split(/\s+/);
   let line = "";
   let y = startY;
@@ -560,8 +609,6 @@ function drawWrappedText(ctx, text, cx, startY, maxWidth, lineHeight, fontPx) {
       ctx.fillText(line.trim(), cx, y);
       line = `${words[n]} `;
       y += lineHeight;
-      if (y > 1080 - 280)
-        ctx.font = `${Math.max(28, fontPx - 6)}px Cormorant Garamond, Georgia, serif`;
     } else line = test;
   }
   ctx.fillText(line.trim(), cx, y);
