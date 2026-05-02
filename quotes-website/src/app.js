@@ -29,12 +29,17 @@ function assetBase() {
 let memoDataRoot = null;
 
 /**
- * Absolute URL prefix for static `/public/data/*` (same origin as this bundle).
- * Derived from `import.meta.url` in production (`…/assets/index-*.js`) so fetches work on
- * custom domain + `github.io/repo/` even when `BASE_URL` and the live URL disagree.
+ * Absolute base URL for `/public/data/*` on the **same host as the HTML document**.
+ * Uses `location` (hash router keeps pathname at site root) so it matches GitHub Pages for both
+ * `www.openourquotes.com` and `github.io/repo/` without depending on `import.meta.url`.
  */
 function dataSiteRoot() {
   if (memoDataRoot) return memoDataRoot;
+  if (typeof window !== "undefined") {
+    const page = window.location.href.split("#")[0];
+    memoDataRoot = new URL("./", page).href;
+    return memoDataRoot;
+  }
   try {
     const u = new URL(import.meta.url);
     const path = u.pathname;
@@ -49,14 +54,13 @@ function dataSiteRoot() {
     /* fall through */
   }
   const b = assetBase();
-  const page = typeof window !== "undefined" ? window.location.href.split("#")[0] : "http://localhost/";
+  const fallbackPage = "http://localhost/";
   if (b === "." || b === "./") {
-    memoDataRoot = new URL("./", page).href.replace(/\/?$/, "/");
+    memoDataRoot = new URL("./", fallbackPage).href.replace(/\/?$/, "/");
   } else if (b.startsWith("/")) {
-    const p = b.endsWith("/") ? b : `${b}/`;
-    memoDataRoot = `${window.location.origin}${p}`;
+    memoDataRoot = `http://localhost${b.endsWith("/") ? b : `${b}/`}`;
   } else {
-    memoDataRoot = new URL(b, page).href.replace(/\/?$/, "/");
+    memoDataRoot = new URL(b, fallbackPage).href.replace(/\/?$/, "/");
   }
   return memoDataRoot;
 }
@@ -219,6 +223,13 @@ function hashRoute() {
     const { path, parts, q, page } = parseHashParts();
     try {
       await prefetchCore();
+    } catch (err) {
+      console.error("Open Our Quotes: catalog fetch failed", err);
+      main.innerHTML =
+        `<div class="hero"><p class="empty-hint">Could not load quote data. If you develop locally, run <code>npm run sync-data</code> in <code>quotes-website/</code>. On the live site, hard-refresh or open the console for the network error.</p></div>`;
+      return;
+    }
+    try {
       initAdsOnce();
       if (path === "/" || path === "") await renderHome(main, side);
       else if (parts[0] === "topics") renderTopicIndex(main, side);
@@ -231,9 +242,9 @@ function hashRoute() {
       renderAdSlots();
       flushAdsSoon();
     } catch (err) {
-      console.error("Open Our Quotes: catalog load failed", err);
+      console.error("Open Our Quotes: page failed", err);
       main.innerHTML =
-        `<div class="hero"><p class="empty-hint">Could not load quote data. If you are developing locally, run <code>npm run sync-data</code> in <code>quotes-website/</code>. Otherwise try a hard refresh; details are in the browser console.</p></div>`;
+        `<div class="hero"><p class="empty-hint">Something went wrong loading this page. Check the browser console. <a href="#/">Home</a></p></div>`;
     }
   });
 }
