@@ -17,7 +17,7 @@ let adsInit = false;
 
 /**
  * Vite `base`: `./` (portable), `/` (custom domain), `/repo/` (project Pages path).
- * Normalized so `${BASE()}data/...` never becomes `.//data/...`.
+ * Normalized so relative links never become `.//…`.
  */
 function assetBase() {
   const raw = import.meta.env.BASE_URL ?? "/";
@@ -26,7 +26,45 @@ function assetBase() {
   return b.endsWith("/") ? b : `${b}/`;
 }
 
-const BASE = assetBase;
+let memoDataRoot = null;
+
+/**
+ * Absolute URL prefix for static `/public/data/*` (same origin as this bundle).
+ * Derived from `import.meta.url` in production (`…/assets/index-*.js`) so fetches work on
+ * custom domain + `github.io/repo/` even when `BASE_URL` and the live URL disagree.
+ */
+function dataSiteRoot() {
+  if (memoDataRoot) return memoDataRoot;
+  try {
+    const u = new URL(import.meta.url);
+    const path = u.pathname;
+    const i = path.lastIndexOf("/assets/");
+    if (i !== -1) {
+      const rootPath = path.slice(0, i) || "/";
+      memoDataRoot =
+        rootPath === "/" ? `${u.origin}/` : `${u.origin}${rootPath.endsWith("/") ? rootPath : `${rootPath}/`}`;
+      return memoDataRoot;
+    }
+  } catch {
+    /* fall through */
+  }
+  const b = assetBase();
+  const page = typeof window !== "undefined" ? window.location.href.split("#")[0] : "http://localhost/";
+  if (b === "." || b === "./") {
+    memoDataRoot = new URL("./", page).href.replace(/\/?$/, "/");
+  } else if (b.startsWith("/")) {
+    const p = b.endsWith("/") ? b : `${b}/`;
+    memoDataRoot = `${window.location.origin}${p}`;
+  } else {
+    memoDataRoot = new URL(b, page).href.replace(/\/?$/, "/");
+  }
+  return memoDataRoot;
+}
+
+function dataFetch(path) {
+  const rel = path.replace(/^\//, "");
+  return fetch(new URL(rel, dataSiteRoot()));
+}
 
 export function mount(el) {
   if (!el) return;
@@ -42,14 +80,14 @@ async function decompressGzipBlob(blob) {
 
 async function ensureLocate() {
   if (locateArr) return;
-  const res = await fetch(`${BASE()}data/locate.json`);
+  const res = await dataFetch("data/locate.json");
   if (!res.ok) throw new Error("locate fetch failed");
   locateArr = await res.json();
 }
 
 async function ensureManifest() {
   if (manifest) return;
-  const res = await fetch(`${BASE()}data/topic-manifest.json`);
+  const res = await dataFetch("data/topic-manifest.json");
   if (!res.ok) throw new Error("manifest fetch failed");
   manifest = await res.json();
 }
@@ -57,7 +95,7 @@ async function ensureManifest() {
 async function fetchShard(cat, si) {
   const key = `${cat}/${si}`;
   if (shardCache.has(key)) return shardCache.get(key);
-  const res = await fetch(`${BASE()}data/t/${cat}/${si}.json`);
+  const res = await dataFetch(`data/t/${cat}/${si}.json`);
   if (!res.ok) throw new Error(`shard ${key}`);
   const arr = await res.json();
   shardCache.set(key, arr);
@@ -98,13 +136,13 @@ async function getTopicQuotesSlice(cat, start, limit) {
 }
 
 async function loadCategoriesMeta() {
-  const res = await fetch(`${BASE()}data/categories-meta.json`);
+  const res = await dataFetch("data/categories-meta.json");
   if (!res.ok) throw new Error("categories meta");
   categories = await res.json();
 }
 
 async function loadQotd() {
-  const res = await fetch(`${BASE()}data/qotd-year.json`);
+  const res = await dataFetch("data/qotd-year.json");
   if (!res.ok) throw new Error("qotd");
   const arr = await res.json();
   const doy = utcDayOfYear(new Date());
@@ -121,7 +159,7 @@ function utcDayOfYear(d) {
 
 async function ensureSearchIndex() {
   if (searchMini) return searchMini;
-  const res = await fetch(`${BASE()}data/search-index.json.gz`);
+  const res = await dataFetch("data/search-index.json.gz");
   const text = await decompressGzipBlob(await res.blob());
   searchMini = MiniSearch.loadJSON(JSON.parse(text));
   return searchMini;
