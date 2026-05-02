@@ -87,7 +87,21 @@ The deploy writes **`ads.txt`** into **`dist/`**, so it is served at:
 
 - **Do not click your own ads** or ask others to click — policy violations risk permanent bans.
 - **RPM** starts low until traffic grows; search/social help more than tweaking placement endlessly.
-- **EU / UK visitors:** Google may later prompt for **consent mode / CMP** for ads personalization — follow AdSense notices when they appear.
+- **EU / UK / Switzerland:** After verification, AdSense often asks you to **create a consent message** (CMP). That’s normal — pick **Google’s CMP** here unless you already pay for another certified CMP.
+
+### Consent message (“Getting your site ready to show ads”)
+
+When Google shows **Create a consent message for your sites**:
+
+| Option | When to use |
+|--------|----------------|
+| **Google’s CMP — 2 choices** (`Consent` + `Manage options`) | Simplest banner; enough for many publishers. |
+| **Google’s CMP — 3 choices** (`Consent` / `Do not consent` / `Manage options`) | Clearer opt-out; slightly busier UI. |
+| **Alternative CMP** | Only if you already use another **Google-certified** CMP (OneTrust, Cookiebot, etc.). |
+
+Finish the wizard and click **Submit**. Google wires consent through your AdSense / `adsbygoogle` setup — you usually **don’t** add extra snippets by hand for Google’s CMP.
+
+**Remind me later** may delay serving or compliance in some regions; prefer completing once you have a minute.
 
 ---
 
