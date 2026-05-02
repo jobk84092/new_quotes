@@ -1,6 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <!-- If GitHub “Enforce HTTPS” is off, still upgrade plain HTTP bookmarks / links. -->
+    <script>
+      (function () {
+        var h = location.hostname;
+        if (
+          location.protocol === "http:" &&
+          (h === "www.openourquotes.com" || h === "openourquotes.com")
+        ) {
+          location.replace(
+            "https://" + location.host + location.pathname + location.search + location.hash
+          );
+        }
+      })();
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta

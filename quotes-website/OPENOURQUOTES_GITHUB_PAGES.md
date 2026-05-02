@@ -56,7 +56,10 @@ Public DNS currently returned **`www`** → **`uixie.porkbun.com`** instead of *
 
 ## Step C — HTTPS + deploy
 
-Wait until GitHub Pages **checks pass**, then enable **Enforce HTTPS**.
+Wait until GitHub Pages **checks pass**, then enable **Enforce HTTPS** (**Settings → Pages**).  
+If this stays off, browsers show **“Not secure”** on **`http://www…`** even though the certificate is valid for **`https://`**.
+
+The site also includes a small script that **redirects `http://…openourquotes.com` → `https://`** as a backup; turning on **Enforce HTTPS** is still recommended so the first hop is secure.
 
 Trigger **Actions → Deploy Open Our Quotes site → Run workflow** (after `VITE_SITE_BASE=/` is set).
 
