@@ -17,11 +17,10 @@
 
 1. Go to **[Google AdSense](https://www.google.com/adsense/)** → sign in → **Get started**.
 2. **Site URL:** `https://www.openourquotes.com/` (include `https://`, trailing slash optional).
-3. **Verify ownership** when prompted — common option is **meta tag**:
-   - Copy the tag Google gives you.
-   - Paste it in **`quotes-website/index.html`** inside `<head>` (there is an HTML comment marking the spot).
-   - Commit, push (or **Actions → Deploy Open Our Quotes site → Run workflow**).
-   - Click **Verify** in AdSense.
+3. **Verify ownership** when prompted:
+   - **AdSense code snippet** (`adsbygoogle.js?client=ca-pub-…`) — this repo keeps **one** loader in **`quotes-website/index.html`** `<head>`. The **`ca-pub-…`** there **must match** your GitHub secret **`VITE_ADSENSE_CLIENT`** when you add ads (same publisher account).
+   - Or use **meta tag** / **ads.txt** if Google shows those instead — paste into **`index.html`** or the **`ADSENSE_ADS_TXT_LINE`** secret per Google’s instructions.
+   - Deploy (**Actions → Deploy Open Our Quotes site**), open **`https://www.openourquotes.com/`**, then click **Verify** in AdSense.
 
 Alternative verification: **DNS TXT** at Porkbun (Google shows instructions).
 

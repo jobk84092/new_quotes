@@ -706,7 +706,20 @@ function escapeAttr(s) {
 }
 
 function initAdsOnce() {
-  if (adsInit || !AD_CLIENT) return;
+  if (adsInit) return;
+  const existing = document.querySelector(
+    'script[src*="pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"]'
+  );
+  if (existing) {
+    adsInit = true;
+    if (AD_CLIENT) {
+      const runAds = () => flushAds();
+      if (window.adsbygoogle) queueMicrotask(runAds);
+      else existing.addEventListener("load", runAds, { once: true });
+    }
+    return;
+  }
+  if (!AD_CLIENT) return;
   adsInit = true;
   const s = document.createElement("script");
   s.async = true;
