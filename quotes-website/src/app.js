@@ -8,6 +8,8 @@ import {
 
 const PAGE_SIZE = 12;
 const AD_EVERY = 6;
+/** MiniSearch can return many hits; cap list length for sanity (still covers large catalogs). */
+const MAX_SEARCH_RESULTS = 250000;
 let categories = [];
 let locateArr = null;
 let manifest = null;
@@ -212,6 +214,20 @@ function readZeroBasedPage(p) {
   return Math.max(0, n - 1);
 }
 
+/** Preserve MiniSearch relevance order; dedupe document ids. */
+function orderedIdsFromHits(hits, max = MAX_SEARCH_RESULTS) {
+  const seen = new Set();
+  const ids = [];
+  for (const h of hits) {
+    const id = Number(h.id);
+    if (!Number.isFinite(id) || seen.has(id)) continue;
+    seen.add(id);
+    ids.push(id);
+    if (ids.length >= max) break;
+  }
+  return ids;
+}
+
 async function prefetchCore() {
   await Promise.all([loadCategoriesMeta(), ensureManifest(), ensureLocate()]);
 }
@@ -361,7 +377,7 @@ async function renderSearch(main, side, initialQ, pageZero) {
       <input type="search" name="q" placeholder="Quotes and authors across the catalog…" value="${escapeHtml(q)}" autocomplete="off" />
       <button type="submit" class="btn btn-accent">Search</button>
     </form>
-    <p style="font-size:0.88rem;color:var(--muted);margin:0 0 1rem;">Full-text search (~6 MB compressed index, fetched once on first search).</p>
+    <p style="font-size:0.88rem;color:var(--muted);margin:0 0 1rem;">Searches the <strong>full quote catalog</strong> (offline index, same technology as many sites — not Google.com). First search downloads ~6&nbsp;MB once, then it’s cached.</p>
     <div id="search-results"></div>`;
 
   main.querySelector("#search-form").addEventListener("submit", (e) => {
@@ -377,12 +393,16 @@ async function renderSearch(main, side, initialQ, pageZero) {
   }
 
   const ms = await ensureSearchIndex();
-  const ql = q.trim().toLowerCase();
+  const rawQ = q.trim();
+  const ql = rawQ.toLowerCase();
   let hits = ms.search(ql, { prefix: true, fuzzy: 0.12 });
-  if (!hits.length) hits = ms.search(q.trim(), { prefix: false, fuzzy: 0.2 });
+  if (!hits.length) hits = ms.search(rawQ, { prefix: false, fuzzy: 0.22 });
+  if (!hits.length && rawQ.includes(" ")) {
+    hits = ms.search(ql, { prefix: true, fuzzy: 0.18, combineWith: "AND" });
+  }
 
-  let idsAll = [...new Set(hits.map((h) => Number(h.id)))];
-  idsAll = idsAll.slice(0, 480);
+  const idsAll = orderedIdsFromHits(hits);
+  const hitCapReached = hits.length > 0 && idsAll.length >= MAX_SEARCH_RESULTS;
   const total = idsAll.length;
   const tp = total ? Math.ceil(total / PAGE_SIZE) : 1;
   const pz = total ? Math.min(pageZero, Math.max(0, tp - 1)) : 0;
@@ -394,7 +414,11 @@ async function renderSearch(main, side, initialQ, pageZero) {
   const intro =
     total === 0
       ? `<p style="color:var(--muted);">No hits for “${escapeHtml(q)}”. Try broader words.</p>`
-      : `<p style="color:var(--muted);margin-bottom:1rem;">Showing ${pz * PAGE_SIZE + 1}–${Math.min((pz + 1) * PAGE_SIZE, total)} of ${total} match${total === 1 ? "" : "es"}.</p>`;
+      : `<p style="color:var(--muted);margin-bottom:1rem;">Showing ${pz * PAGE_SIZE + 1}–${Math.min((pz + 1) * PAGE_SIZE, total)} of ${total.toLocaleString()} match${total === 1 ? "" : "es"}.${
+          hitCapReached
+            ? ` <span style="opacity:0.9">(List capped at ${MAX_SEARCH_RESULTS.toLocaleString()} — refine your search.)</span>`
+            : ""
+        }</p>`;
 
   out.innerHTML = `
     ${intro}
