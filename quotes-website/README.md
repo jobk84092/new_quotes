@@ -66,10 +66,7 @@ With **`openourquotes.com`** on GitHub Pages, visitors hit your brand URL only; 
 
 3. Wait for DNS and HTTPS (GitHub issues a **free certificate**).
 
-4. **Important:** Tell the site build to serve from **`/`**, not **`/new_quotes/`**:
-   - **Settings → Secrets and variables → Actions → Variables**.
-   - New variable **`VITE_SITE_BASE`** = **`/`**.
-   - Re-run workflow **Deploy Open Our Quotes site** (or push a tiny commit).
+4. **Deploy base path:** The workflow defaults to **`VITE_SITE_BASE=./`**, which serves correctly on **`www.openourquotes.com`** and **`github.io/<repo>/`** without extra variables. Override only if you know you need **`/`** or **`/new_quotes/`** explicitly (**Settings → Secrets and variables → Actions → Variables**).
 
 5. Put **`https://www.openourquotes.com/`** everywhere in **Google AdSense** (see **[ADSENSE_FIRST_TIME.md](ADSENSE_FIRST_TIME.md)**).
 
@@ -79,7 +76,7 @@ Same **static folder** (`quotes-website/dist`) can ship from **Cloudflare Pages*
 
 1. Push to `main`; workflow **Deploy Open Our Quotes site** runs (or **Actions → Run workflow**).
 2. Repo **Settings → Pages → Build and deployment:** set source to **GitHub Actions** once.
-3. After **`VITE_SITE_BASE=/`** + DNS propagation, verify **`https://www.openourquotes.com/`** and **`privacy.html`**. Fallback before DNS: **`https://jobk84092.github.io/new_quotes/`** (only if repo is **public** and `VITE_SITE_BASE` unset for subpath builds).
+3. After DNS propagation, verify **`https://www.openourquotes.com/`** and **`privacy.html`**. Fallback: **`https://jobk84092.github.io/new_quotes/`** with the default **`./`** base (repo **public**).
 
 **Private repo:** On the GitHub Free plan, **Pages is not enabled for private repositories.** Make this repo **public** (repo **Settings → General → Danger zone**) **or** host `quotes-website/dist` elsewhere (Cloudflare Pages, Netlify, etc.)—same assets, drag-and-drop **`dist`** works.
 

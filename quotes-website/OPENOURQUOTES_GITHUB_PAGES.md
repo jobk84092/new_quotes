@@ -8,7 +8,7 @@ Your domain lives at **Porkbun**; hosting is **free** on **GitHub Pages**, built
 
 1. **Pages requires a public repo** on the Free GitHub plan (or Team/Enterprise for private). Repo: **`jobk84092/new_quotes`** → consider **Settings → General → Change visibility → Public**.
 2. **Settings → Pages → Build and deployment** → Source: **GitHub Actions**.
-3. **Actions variable `VITE_SITE_BASE` = `/`** (**Settings → Secrets and variables → Actions → Variables**) so CSS/JS load at `https://www.openourquotes.com/` instead of assuming `/new_quotes/`.
+3. **Actions variable `VITE_SITE_BASE` (optional)** — the deploy workflow now defaults to **`./`**, which works for **both** `https://www.openourquotes.com/` and `https://<user>.github.io/<repo>/` without setting anything. Only add a variable if you need an explicit **`/`** or **`/new_quotes/`**-style base.
 
 ---
 

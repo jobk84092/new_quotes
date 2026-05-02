@@ -51,15 +51,15 @@ jobs:
         shell: bash
         run: |
           REPO_NAME="${GITHUB_REPOSITORY##*/}"
+          # `./` works for BOTH custom domain (www.openourquotes.com) AND github.io/repo/ — no variable required.
           if [ -z "$CUSTOM_BASE" ]; then
-            export VITE_SITE_BASE="/${REPO_NAME}/"
-            echo "Using default GitHub Pages URL base: ${VITE_SITE_BASE}"
+            export VITE_SITE_BASE="./"
+            echo "Using portable VITE_SITE_BASE=${VITE_SITE_BASE} (custom domain + github.io/${REPO_NAME}/)"
           else
             export VITE_SITE_BASE="$CUSTOM_BASE"
             echo "Using repo variable VITE_SITE_BASE: ${VITE_SITE_BASE}"
           fi
-          echo "Live URL pattern: https://${GITHUB_REPOSITORY%%/*}.github.io/${REPO_NAME}/ (unless custom domain)"
-          echo "NOTE: For openourquotes.com set Actions variable VITE_SITE_BASE=/ — see quotes-website/OPENOURQUOTES_GITHUB_PAGES.md"
+          echo "Override: Settings → Variables → VITE_SITE_BASE (optional; use / or /${REPO_NAME}/ only if you know you need it)"
           npm ci
           npm run build
 

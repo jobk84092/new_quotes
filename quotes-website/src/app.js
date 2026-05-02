@@ -15,7 +15,18 @@ let searchMini = null;
 const shardCache = new Map();
 let adsInit = false;
 
-const BASE = () => import.meta.env.BASE_URL || "/";
+/**
+ * Vite `base`: `./` (portable), `/` (custom domain), `/repo/` (project Pages path).
+ * Normalized so `${BASE()}data/...` never becomes `.//data/...`.
+ */
+function assetBase() {
+  const raw = import.meta.env.BASE_URL ?? "/";
+  const b = typeof raw === "string" ? raw.trim() : "/";
+  if (b === "." || b === "./") return "./";
+  return b.endsWith("/") ? b : `${b}/`;
+}
+
+const BASE = assetBase;
 
 export function mount(el) {
   if (!el) return;
@@ -181,9 +192,10 @@ function hashRoute() {
 
       renderAdSlots();
       flushAdsSoon();
-    } catch (_) {
+    } catch (err) {
+      console.error("Open Our Quotes: catalog load failed", err);
       main.innerHTML =
-        `<div class="hero"><p class="empty-hint">Could not load data. Run <code>npm run sync-data</code> in <code>quotes-website/</code>.</p></div>`;
+        `<div class="hero"><p class="empty-hint">Could not load quote data. If you are developing locally, run <code>npm run sync-data</code> in <code>quotes-website/</code>. Otherwise try a hard refresh; details are in the browser console.</p></div>`;
     }
   });
 }
@@ -199,7 +211,7 @@ function renderShell(root, inner) {
           <a href="#/">Today</a>
           <a href="#/topics">Topics</a>
           <a href="#/search">Search</a>
-          <a href="${String(import.meta.env.BASE_URL)}privacy.html">Privacy</a>
+          <a href="${assetBase()}privacy.html">Privacy</a>
         </nav>
       </div>
     </header>
