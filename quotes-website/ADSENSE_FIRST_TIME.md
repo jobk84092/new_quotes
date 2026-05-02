@@ -3,6 +3,8 @@
 **Live site:** `https://www.openourquotes.com/`  
 **Privacy:** `https://www.openourquotes.com/privacy.html`
 
+**AdSense publisher for this website (new):** `ca-pub-9907830179614621` — same value in **`quotes-website/index.html`** (loader script) and GitHub secret **`VITE_ADSENSE_CLIENT`**. This is **only** for the **web** property; do not mix it up with **AdMob / Flutter** publisher IDs elsewhere in the repo.
+
 ---
 
 ## Before you apply
