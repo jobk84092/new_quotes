@@ -6,6 +6,13 @@ import {
   canonicalQuoteUrl,
 } from "./config.js";
 
+/** Same options as `scripts/sync-quotes.mjs` — required for `MiniSearch.loadJSON`. */
+const MINISEARCH_LOAD_OPTIONS = {
+  fields: ["text", "author"],
+  idField: "id",
+  extractField: (doc, fieldName) => (fieldName === "id" ? doc.id : doc[fieldName]),
+};
+
 const PAGE_SIZE = 12;
 const AD_EVERY = 6;
 /** MiniSearch can return many hits; cap list length for sanity (still covers large catalogs). */
@@ -166,8 +173,9 @@ function utcDayOfYear(d) {
 async function ensureSearchIndex() {
   if (searchMini) return searchMini;
   const res = await dataFetch("data/search-index.json.gz");
-  const text = await decompressGzipBlob(await res.blob());
-  searchMini = MiniSearch.loadJSON(JSON.parse(text));
+  if (!res.ok) throw new Error("search index fetch failed");
+  const jsonString = await decompressGzipBlob(await res.blob());
+  searchMini = MiniSearch.loadJSON(jsonString, MINISEARCH_LOAD_OPTIONS);
   return searchMini;
 }
 
@@ -398,7 +406,11 @@ async function renderSearch(main, side, initialQ, pageZero) {
   let hits = ms.search(ql, { prefix: true, fuzzy: 0.12 });
   if (!hits.length) hits = ms.search(rawQ, { prefix: false, fuzzy: 0.22 });
   if (!hits.length && rawQ.includes(" ")) {
-    hits = ms.search(ql, { prefix: true, fuzzy: 0.18, combineWith: "AND" });
+    try {
+      hits = ms.search(ql, { prefix: true, fuzzy: 0.18, combineWith: "AND" });
+    } catch {
+      hits = [];
+    }
   }
 
   const idsAll = orderedIdsFromHits(hits);
